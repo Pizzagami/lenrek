@@ -1,2 +1,2 @@
 # lenrek
-a basic Linux kernel in Rust
+A basic Linux kernel in Rust
