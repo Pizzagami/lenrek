@@ -7,6 +7,9 @@ start:
 
     call check_multiboot
 
+    extern rust_main
+    call rust_main
+
     ; print `42` to screen
     mov dword [0xb8000], 0x2f323f34
     hlt
