@@ -1,7 +1,7 @@
 #![feature(lang_items)]
 #![no_std]
 
-static HELLO: &[u8] = b"Hello World!";
+static HELLO: &[u8] = b"42";
 
 #[no_mangle]
 pub extern "C" fn rust_main() {
