@@ -6,3 +6,7 @@ edition = "2021"
 [lib]
 path = "src/lib.rs"
 crate-type = ["staticlib"]
+
+[dependencies]
+once_cell = { version = "1.19.0", default-features = false }
+spin = "0.9.8"
