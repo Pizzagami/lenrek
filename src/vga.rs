@@ -38,7 +38,7 @@ pub struct Cell {
     pub col: usize,
     pub row: usize,
     pub color: Colors,
-    pub buffer: &'static mut Buffer,
+    buffer: &'static mut Buffer,
 }
 
 impl Default for Cell {
@@ -53,14 +53,6 @@ impl Default for Cell {
 }
 
 impl Cell {
-
-    fn set_cursor_position(&mut self) {
-        let mut col = self.col;
-        if col >= WIDTH {
-            col -= 1;
-        }
-        let pos = self.row * WIDTH + col;
-    }
 
     fn clear_line(&mut self, n: usize) {
         for x in 0..WIDTH {
@@ -111,68 +103,6 @@ impl Cell {
         for byte in str.bytes() {
             self.print_char(byte)
         }
-        self.set_cursor_position();
     }
 
-
-    pub fn del(&mut self) {
-        if self.col == 0 {
-            if self.row > 0 {
-                self.row -= 1;
-            }
-            self.col = WIDTH - 1;
-            self.buffer.pix[self.row][self.col].char = b' ';
-        }
-        else {
-            self.col -= 1;
-            self.buffer.pix[self.row][self.col].char = b' ';
-        }
-        self.set_cursor_position();
-    }
-}
-
-use core::fmt::{self, Write};
-impl fmt::Write for Cell {
-    fn write_str(&mut self, s: &str) -> fmt::Result {
-        self.print_string(s);
-        Ok(())
-    }
-}
-
-
-use spin::Mutex;
-use once_cell::unsync::Lazy;
-
-static INTERFACE: Mutex<Lazy<Cell>> = Mutex::new(Lazy::new(|| Cell::default()));
-
-#[macro_export]
-macro_rules! println {
-    () => { print!("\n") };
-    ($($arg:tt)*) => {
-        print!($($arg)*);
-        print!("\n");
-    }
-}
-
-#[macro_export]
-macro_rules! print {
-    () => {};
-    ($($arg:tt)*) => {
-        crate::vga::_print(format_args!($($arg)*));
-    };
-}
-
-#[macro_export]
-macro_rules! printdel {
-    () => {
-        crate::vga::_del();
-    };
-}
-
-pub fn _del() {
-    INTERFACE.lock().del();
-}
-
-pub(crate) fn _print(args: fmt::Arguments) {
-    INTERFACE.lock().write_fmt(args).unwrap();
 }
