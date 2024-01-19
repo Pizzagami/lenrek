@@ -2,10 +2,14 @@
 name = "lenrek"
 version = "0.1.0"
 edition = "2021"
+build = "build.rs"
 
 [lib]
 path = "src/lib.rs"
 crate-type = ["staticlib"]
+
+[build-dependencies]
+cc = "1.0.83"
 
 [dependencies]
 once_cell = { version = "1.19.0", default-features = false }

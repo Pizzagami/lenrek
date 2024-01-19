@@ -5,9 +5,9 @@ iso := build/os-$(arch).iso
 
 linker_script := src/arch/$(arch)/linker.ld
 grub_cfg := src/arch/$(arch)/grub.cfg
-assembly_source_files := $(wildcard src/arch/$(arch)/*.asm)
-assembly_object_files := $(patsubst src/arch/$(arch)/%.asm, \
-    build/arch/$(arch)/%.o, $(assembly_source_files))
+asm_src_files := $(wildcard src/arch/$(arch)/*.asm)
+asm_obj_files := $(patsubst src/arch/$(arch)/%.asm, \
+    build/arch/$(arch)/%.o, $(asm_src_files))
 
 
 all: $(kernel)
@@ -35,8 +35,8 @@ install:
 	rustup target add i686-unknown-linux-gnu
 	rustup component add rust-src --toolchain nightly-x86_64-unknown-linux-gnu
 
-$(kernel): kernel $(assembly_object_files) $(linker_script)
-	ld -m elf_i386 -T $(linker_script) -o $(kernel) $(assembly_object_files) $(rust_os)
+$(kernel): kernel $(asm_obj_files) $(linker_script)
+	ld -m elf_i386 -T $(linker_script) -o $(kernel) $(asm_obj_files) $(rust_os)
 
 build/arch/$(arch)/%.o: src/arch/$(arch)/%.asm
 	mkdir -p $(shell dirname $@)
