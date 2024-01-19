@@ -100,7 +100,26 @@ impl Cell {
     }
 
     pub fn print_string(&mut self, str: &str) {
+        let color_array: [Colors; 14] = [
+            Colors::BrightRed,
+            Colors::BrightRed,
+            Colors::BrightYellow,
+            Colors::BrightYellow,
+            Colors::BrightGreen,
+            Colors::BrightGreen,
+            Colors::BrightCyan,
+            Colors::BrightCyan,
+            Colors::BrightBlue,
+            Colors::BrightBlue,
+            Colors::Purple,
+            Colors::Purple,
+            Colors::BrightPurple,
+            Colors::BrightPurple,
+        ];
         for byte in str.bytes() {
+            let color_index = (self.col + self.row) % color_array.len();
+            let color = color_array[color_index];
+            self.color = color;
             self.print_char(byte)
         }
     }
