@@ -28,8 +28,9 @@ $(iso): $(kernel) $(grub_cfg)
 	rm -r build/isofiles
 
 install:
-	sudo apt install -y grub-common grub-pc-bin binutils xorriso mtools qemu-system
-	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.sh | sh
+	sudo apt install -y nasm curl gcc grub-common grub-pc-bin binutils xorriso mtools qemu-system
+	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+	source ~/.cargo/env
 	rustup update nightly
 	rustup default nightly
 	rustup target add i686-unknown-linux-gnu
