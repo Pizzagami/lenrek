@@ -1,49 +1,27 @@
 arch ?= x86
-rust_os := target/$(arch)/debug/liblenrek.a
-kernel := build/kernel-$(arch).bin
-iso := build/os-$(arch).iso
+KERNEL = target/x86/debug/kernel
+GRUB_CFG = src/arch/x86/grub.cfg
 
-linker_script := src/arch/$(arch)/linker.ld
-grub_cfg := src/arch/$(arch)/grub.cfg
-asm_src_files := $(wildcard src/arch/$(arch)/*.asm)
-asm_obj_files := $(patsubst src/arch/$(arch)/%.asm, \
-    build/arch/$(arch)/%.o, $(asm_src_files))
+ISO = build/os-$(arch).iso
 
-
-all: $(kernel)
-
-clean:
-	rm -r build
-
-run: $(iso)
-	qemu-system-i386 -cdrom $(iso)
-
-iso: $(iso)
-
-$(iso): $(kernel) $(grub_cfg)
-	mkdir -p build/isofiles/boot/grub
-	cp $(kernel) build/isofiles/boot/kernel.bin
-	cp $(grub_cfg) build/isofiles/boot/grub
-	grub-mkrescue -o $(iso) build/isofiles 2> /dev/null
-	rm -r build/isofiles
-
-install:
-	sudo apt install -y grub-common grub-pc-bin binutils xorriso mtools qemu-system
-	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.sh | sh
-	rustup update nightly
-	rustup default nightly
-	rustup target add i686-unknown-linux-gnu
-	rustup component add rust-src --toolchain nightly-x86_64-unknown-linux-gnu
-
-$(kernel): kernel $(asm_obj_files) $(linker_script)
-	ld -m elf_i386 -T $(linker_script) -o $(kernel) $(asm_obj_files) $(rust_os)
-
-build/arch/$(arch)/%.o: src/arch/$(arch)/%.asm
-	mkdir -p $(shell dirname $@)
-	nasm -f elf32 $< -o $@
+all: kernel iso
 
 kernel:
 	cargo build
+	cp $(KERNEL) .
 
+iso: kernel
+	mkdir -pv iso/boot/grub
+	cp kernel iso/boot
+	cp $(GRUB_CFG) iso/boot/grub
+	grub-mkrescue -o $(ISO) iso
 
-.PHONY: all clean run iso kernel
+run:
+	qemu-system-i386 -cdrom $(ISO)
+
+clean:
+	rm -rf  target
+
+re: clean all
+
+.PHONY: all re clean run iso kernel
