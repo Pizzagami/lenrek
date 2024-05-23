@@ -13,7 +13,7 @@ assembly_object_files := $(patsubst src/arch/$(arch)/%.asm, \
 all: $(kernel)
 
 clean:
-	rm -r target
+	rm -r target build
 
 run: $(iso)
 	qemu-system-i386 -cdrom $(iso)
