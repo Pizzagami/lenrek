@@ -1,7 +1,7 @@
 fn main() {
 	println!("cargo:rerun-if-changed=src/gdt/gdt.s");
 	println!("cargo:rerun-if-changed=src/arch/x86/linker.ld");
-	println!("cargo:rustc-link-arg=-T src/arch/x86/linker.ld");	
+	println!("cargo:rustc-link-arg=-Tsrc/arch/x86/linker.ld");	
 	cc::Build::new()
 		.compiler("gcc")
 		.flag("-nostdlib")

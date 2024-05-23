@@ -1,9 +1,17 @@
 #![no_std]
+#![no_main]
+
 
 mod vga;
+mod gdt;
+
+fn print_gdt() {
+    gdt::print_gdt();
+}
 
 #[no_mangle]
-pub extern "C" fn rust_main() {
+pub extern "C" fn main() {
+
     let mut cell = vga::Cell::default();
     cell.reset_screen();
     cell.print_string("42******************************************************************************
@@ -16,8 +24,9 @@ pub extern "C" fn rust_main() {
 *   #      #      #  ##  # #    #      #  #           #+#    #+#               *
 *   #####  #####  #   #  #  #   #####  #   #         ###   ########.fr         *
 *                                                                              *
-********************************************************************************");
-//    print_gdt();
+********************************************************************************\n");
+    gdt::init();
+    print_gdt();
     loop {}
 }
 

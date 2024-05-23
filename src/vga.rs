@@ -125,3 +125,37 @@ impl Cell {
     }
 
 }
+
+use core::fmt::{self, Write};
+impl fmt::Write for Cell {
+    fn write_str(&mut self, s: &str) -> fmt::Result {
+        self.print_string(s);
+        Ok(())
+    }
+}
+
+use spin::Mutex;
+use once_cell::unsync::Lazy;
+
+static CELL: Mutex<Lazy<Cell>> = Mutex::new(Lazy::new(|| Cell::default()));
+
+#[macro_export]
+macro_rules! println {
+    () => { print!("\n") };
+    ($($arg:tt)*) => {
+        print!($($arg)*);
+        print!("\n");
+    }
+}
+
+#[macro_export]
+macro_rules! print {
+    () => {};
+    ($($arg:tt)*) => {
+        crate::vga::_print(format_args!($($arg)*));
+    };
+}
+
+pub(crate) fn _print(args: fmt::Arguments) {
+    CELL.lock().write_fmt(args).unwrap();
+}

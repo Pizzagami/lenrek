@@ -2,7 +2,7 @@ arch ?= x86
 KERNEL = target/x86/debug/kernel
 GRUB_CFG = src/arch/x86/grub.cfg
 
-ISO = build/os-$(arch).iso
+ISO = os-$(arch).iso
 
 all: kernel iso
 
