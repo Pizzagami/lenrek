@@ -14,13 +14,14 @@ iso: kernel
 	mkdir -pv iso/boot/grub
 	cp kernel iso/boot
 	cp $(GRUB_CFG) iso/boot/grub
+	grub-file --is-x86-multiboot iso/boot/kernel
 	grub-mkrescue -o $(ISO) iso
 
 run:
 	qemu-system-i386 -cdrom $(ISO)
 
 clean:
-	rm -rf  target
+	rm -rf  target iso kernel os-x86.iso
 
 re: clean all
 
