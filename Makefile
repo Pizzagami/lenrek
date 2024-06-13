@@ -17,13 +17,13 @@ iso: kernel
 	grub-file --is-x86-multiboot iso/boot/kernel
 	grub-mkrescue -o $(ISO) iso
 
-
 install:
-	sudo apt install -y grub-common grub-pc-bin binutils xorriso mtools qemu-system
+	sudo apt install -y nasm curl gcc grub-common grub-pc-bin binutils xorriso mtools qemu-system
 	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+	source ~/.cargo/env
 	rustup update nightly
 	rustup default nightly
-	rustup target add i686-unknown-linux-gnu
+	rustup target add i386-unknown-linux-gnu
 	rustup component add rust-src --toolchain nightly-x86_64-unknown-linux-gnu
 
 run:
