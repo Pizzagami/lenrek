@@ -23,7 +23,7 @@ install:
 	source ~/.cargo/env
 	rustup update nightly
 	rustup default nightly
-	rustup target add i386-unknown-linux-gnu
+	rustup target add i586-unknown-linux-gnu
 	rustup component add rust-src --toolchain nightly-x86_64-unknown-linux-gnu
 
 run:
