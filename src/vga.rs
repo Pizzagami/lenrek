@@ -1,3 +1,5 @@
+use crate::asm;
+
 const VGA_ADDRESS: u32 = 0xB8000;
 const WIDTH: usize = 80;
 const HEIGHT: usize = 25;
@@ -62,6 +64,8 @@ impl Cell {
     }
 
     pub fn reset_screen(&mut self) {
+        self.disable_cursor();
+        self.enable_cursor();
         self.col = 0;
         self.row = 0;
         self.color = Colors::White;
@@ -122,6 +126,21 @@ impl Cell {
             self.color = color;
             self.print_char(byte)
         }
+        self.set_cursor_position();
+    }
+    pub fn del(&mut self) {
+        if self.col == 0 {
+            if self.row > 0 {
+                self.row -= 1;
+            }
+            self.col = WIDTH - 1;
+            self.vga_address.cells[self.y][self.x].character = b' ';
+        }
+        else {
+            self.col -= 1;
+            self.vga_address.cells[self.y][self.x].character = b' ';
+        }
+        self.set_cursor_position();
     }
 
 }
@@ -152,10 +171,56 @@ macro_rules! println {
 macro_rules! print {
     () => {};
     ($($arg:tt)*) => {
-        crate::vga::_print(format_args!($($arg)*));
+        crate::CELL::_print(format_args!($($arg)*));
     };
 }
 
+#[macro_export]
+macro_rules! printdel {
+    () => {
+        crate::CELL::_del();
+    };
+}
+
+pub fn _del() {
+    CELL.lock().del();
+}
+
+
 pub(crate) fn _print(args: fmt::Arguments) {
     CELL.lock().write_fmt(args).unwrap();
+}
+
+pub fn set_color(color: Colors) {
+    CELL.lock().color = color;
+}
+
+pub fn color_str_to_color(s: &[u8]) -> Option<Colors> { // maybe to remove
+    match s {
+        [b'b', b'l', b'a', b'c', b'k'] => { return Some(Colors::Black) }
+        [b'b', b'l', b'u', b'e'] => { return Some(Colors::Blue) }
+        [b'g', b'r', b'e', b'e', b'n'] => { return Some(Colors::Green) }
+        [b'c', b'y', b'a', b'n']  => { return Some(Colors::Cyan) }
+        [b'r', b'e', b'd'] => { return Some(Colors::Red) }
+        [b'p', b'u', b'r', b'p', b'l', b'e'] => { return Some(Colors::Purple) }
+        [b'y', b'e', b'l', b'l', b'o', b'w'] => { return Some(Colors::Yellow) }
+        [b'w', b'h', b'i', b't', b'e'] => { return Some(Colors::White) }
+        [b'g', b'r', b'e', b'y'] => { return Some(Colors::Grey) }
+        [b'b', b'r', b'i', b'g', b'h', b't', b'_', b'b', b'l', b'u', b'e'] => { return Some(Colors::BrightBlue) }
+        [b'b', b'r', b'i', b'g', b'h', b't', b'_', b'g', b'r', b'e', b'e', b'n'] => { return Some(Colors::BrightGreen) }
+        [b'b', b'r', b'i', b'g', b'h', b't', b'_', b'c', b'y', b'a', b'n'] => { return Some(Colors::BrightCyan) }
+        [b'b', b'r', b'i', b'g', b'h', b't', b'_', b'r', b'e', b'd'] => { return Some(Colors::BrightRed) }
+        [b'b', b'r', b'i', b'g', b'h', b't', b'_', b'p', b'u', b'r', b'p', b'l', b'e'] => { return Some(Colors::BrightPurple) }
+        [b'b', b'r', b'i', b'g', b'h', b't', b'_', b'y', b'e', b'l', b'l', b'o', b'w'] => { return Some(Colors::BrightYellow) }
+        [b'b', b'r', b'i', b'g', b'h', b't', b'_', b'w', b'h', b'i', b't', b'e'] => { return Some(Colors::BrightWhite) }
+        _ => { return None }
+    }
+}
+
+pub fn get_color() -> Colors {
+    return CELL.lock().color;
+}
+
+pub fn reset_screen() {
+    CELL.lock().reset_screen()
 }

@@ -1,4 +1,4 @@
-pub mod en;
+pub mod us;
 pub mod fr;
 
 use crate::asm;
@@ -87,7 +87,7 @@ const LANG: [Kmap; 2] = [
         map: fr::KMAP, map_shift: fr::KMAP_SHIFT
     },
     Kmap {
-        map: en::KMAP, map_shift: en::KMAP_SHIFT
+        map: us::KMAP, map_shift: us::KMAP_SHIFT
     }
 ];
 
