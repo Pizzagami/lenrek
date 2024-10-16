@@ -3,11 +3,14 @@
 #![feature(naked_functions)]
 
 mod vga;
+mod utils;
 mod gdt;
+mod shell;
+mod idt;
+mod keyboard;
+mod asm;
 
-fn print_gdt() {
-    gdt::print_gdt();
-}
+use vga::Colors;
 
 #[allow(dead_code)]
 pub struct MultibootHeader {
@@ -41,25 +44,38 @@ pub extern "C" fn _start() -> ! {
 #[no_mangle]
 pub extern "C" fn main() -> ! {
 
-    let mut cell = vga::Cell::default();
-    cell.reset_screen();
-    cell.print_string("42******************************************************************************
-*                                                                              *
-*   #      #####  #   #  #####  #####  #   #             :::      ::::::::     *
-*   #      #      ##  #  #   #  #      #  #            :+:      :+:    :+:     *
-*   #      #      ##  #  #   #  #      # #           +:+ +:+         +:+       *
-*   #      ###    # # #  #####  ###    ##          +#+  +:+       +#+          *
-*   #      #      #  ##  ##     #      # #       +#+#+#+#+#+   +#+             *
-*   #      #      #  ##  # #    #      #  #           #+#    #+#               *
-*   #####  #####  #   #  #  #   #####  #   #         ###   ########.fr         *
-*                                                                              *
-********************************************************************************\n");
     gdt::init();
-    print_gdt();
-    loop {}
+    idt::init();
+
+    cli!();
+
+    interface::reset_screen();
+    utils::print_header();
+    interface::set_color(Colors::White);
+    println!();
+
+    shell::print_prompt();
+
+    sti!();
+    loop {
+        hlt!();
+    }
+
 }
 
 #[panic_handler]
 fn panic(_info: &core::panic::PanicInfo) -> ! {
+    let arg = format_args!("");
+    let message =  _info.message().unwrap_or(&arg);
+    let location = _info.location().unwrap();
+
+    interface::set_color(Colors::BrightRed);
+    print!("[PANIC ");
+    interface::set_color(Colors::BrightWhite);
+    print!("{}", location);
+    interface::set_color(Colors::BrightRed);
+    print!("]: ");
+    interface::set_color(Colors::BrightWhite);
+    println!("{}", message);
     loop {}
 }
