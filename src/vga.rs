@@ -56,6 +56,39 @@ impl Default for Cell {
 
 impl Cell {
 
+    fn enable_cursor(&mut self) {
+        // We call `out 0x3d4, 0xa` so that on the `out 0x3d5, 0xe` the cursor will change it's look
+        asm::outb(0x3d4, 0xa);
+        // bits 0-4 control the cursor shape (0x0-0xf range), we chose 0xe because it looks cool
+        asm::outb(0x3d5, 0xe);
+    }
+    fn disable_cursor(&mut self) {
+        // We call `out 0x3d4, 0xa` so that on the `out 0x3d5, 0x10` the cursor will disapear
+        asm::outb(0x3d4, 0xa);
+        // bit 5 disables the cursor (0xf or 1 << 4)
+        asm::outb(0x3d5, 0xf);
+    }
+
+    fn set_cursor_position(&mut self) {
+        // pos of the cursor is calculated the same way character are placed on the screen
+        // pos should (and must) be in the range (0-WIDTH*HEIGHT-1)
+        let mut x = self.x;
+        if x >= WIDTH {
+            x -= 1;
+        }
+        let pos = self.y * WIDTH + x;
+
+        // say we are going to put the lower bits (0-7)
+        asm::outb(0x3D4, 0x0F);
+        // put the lower 8 bits
+        asm::outb(0x3D5, (pos & 0xff).try_into().unwrap());
+        // say we are going to put the upper bits (8-15)
+        asm::outb(0x3D4, 0x0E);
+        // put the upper 8 bits
+        asm::outb(0x3D5, ((pos >> 8) & 0xff).try_into().unwrap());
+    }
+
+    
     fn clear_line(&mut self, n: usize) {
         for x in 0..WIDTH {
             self.buffer.pix[n][x].char = b' ';
