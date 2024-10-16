@@ -72,11 +72,11 @@ impl Cell {
     fn set_cursor_position(&mut self) {
         // pos of the cursor is calculated the same way character are placed on the screen
         // pos should (and must) be in the range (0-WIDTH*HEIGHT-1)
-        let mut x = self.x;
-        if x >= WIDTH {
-            x -= 1;
+        let mut col = self.col;
+        if col >= WIDTH {
+            col -= 1;
         }
-        let pos = self.y * WIDTH + x;
+        let pos = self.row * WIDTH + col;
 
         // say we are going to put the lower bits (0-7)
         asm::outb(0x3D4, 0x0F);
@@ -88,11 +88,11 @@ impl Cell {
         asm::outb(0x3D5, ((pos >> 8) & 0xff).try_into().unwrap());
     }
 
-    
+
     fn clear_line(&mut self, n: usize) {
-        for x in 0..WIDTH {
-            self.buffer.pix[n][x].char = b' ';
-            self.buffer.pix[n][x].color = Colors::White;
+        for col in 0..WIDTH {
+            self.buffer.pix[n][col].char = b' ';
+            self.buffer.pix[n][col].color = Colors::White;
         }
     }
 
@@ -155,7 +155,7 @@ impl Cell {
         ];
         for byte in str.bytes() {
             let color_index = (self.col + self.row) % color_array.len();
-            let color = color_array[color_index];
+            let color = color_array[color_indecol];
             self.color = color;
             self.print_char(byte)
         }
@@ -167,11 +167,11 @@ impl Cell {
                 self.row -= 1;
             }
             self.col = WIDTH - 1;
-            self.vga_address.cells[self.y][self.x].character = b' ';
+            self.vga_address.cells[self.row][self.col].character = b' ';
         }
         else {
             self.col -= 1;
-            self.vga_address.cells[self.y][self.x].character = b' ';
+            self.vga_address.cells[self.row][self.col].character = b' ';
         }
         self.set_cursor_position();
     }
