@@ -155,7 +155,7 @@ impl Cell {
         ];
         for byte in str.bytes() {
             let color_index = (self.col + self.row) % color_array.len();
-            let color = color_array[color_indecol];
+            let color = color_array[color_index];
             self.color = color;
             self.print_char(byte)
         }

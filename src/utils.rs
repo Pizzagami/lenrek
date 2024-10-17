@@ -30,13 +30,13 @@ pub fn print_header() {
     println!("     */");
     print!("/*   By: ");
     set_color(name_color);
-    print!("Arthur");
+    print!("Pizz");
     set_color(border_color);
     print!(" and ");
     set_color(name_color);
-    print!("Lucas");
+    print!("Billy");
     set_color(border_color);
-    print!(" aka les mecs stylees      ");
+    print!("                           ");
     set_color(ft_color);
     print!("+#+  +:+       +#+");
     set_color(border_color);
@@ -48,14 +48,14 @@ pub fn print_header() {
     println!("           */");
     print!("/*   Created: 2023/11/14 15:09:19 by ");
     set_color(name_color);
-    print!("Lucas             ");
+    print!("Billy             ");
     set_color(ft_color);
     print!("#+#    #+#");
     set_color(border_color);
     println!("             */");
     print!("/*   Updated: 2023/11/14 01:24:22 by ");
     set_color(name_color);
-    print!("Arthur           ");
+    print!("Pizz           ");
     set_color(ft_color);
     print!("###   ########.fr");
     set_color(border_color);
@@ -67,37 +67,37 @@ pub fn print_header() {
 #[allow(dead_code)]
 pub fn test_color() {
     set_color(Colors::Black);
-    println!("Lucas ABCDEFGHIJKLMNOPQRSTUVXYZ !###$//.;");
+    println!("Billy ABCDEFGHIJKLMNOPQRSTUVXYZ !###$//.;");
     set_color(Colors::Blue);
-    println!("Lucas ABCDEFGHIJKLMNOPQRSTUVXYZ !###$//.;");
+    println!("Billy ABCDEFGHIJKLMNOPQRSTUVXYZ !###$//.;");
     set_color(Colors::Green);
-    println!("Lucas ABCDEFGHIJKLMNOPQRSTUVXYZ !###$//.;");
+    println!("Billy ABCDEFGHIJKLMNOPQRSTUVXYZ !###$//.;");
     set_color(Colors::Cyan);
-    println!("Lucas ABCDEFGHIJKLMNOPQRSTUVXYZ !###$//.;");
+    println!("Billy ABCDEFGHIJKLMNOPQRSTUVXYZ !###$//.;");
     set_color(Colors::Red);
-    println!("Lucas ABCDEFGHIJKLMNOPQRSTUVXYZ !###$//.;");
+    println!("Billy ABCDEFGHIJKLMNOPQRSTUVXYZ !###$//.;");
     set_color(Colors::Purple);
-    println!("Lucas ABCDEFGHIJKLMNOPQRSTUVXYZ !###$//.;");
+    println!("Billy ABCDEFGHIJKLMNOPQRSTUVXYZ !###$//.;");
     set_color(Colors::Yellow);
-    println!("Lucas ABCDEFGHIJKLMNOPQRSTUVXYZ !###$//.;");
+    println!("Billy ABCDEFGHIJKLMNOPQRSTUVXYZ !###$//.;");
     set_color(Colors::White);
-    println!("Lucas ABCDEFGHIJKLMNOPQRSTUVXYZ !###$//.;");
+    println!("Billy ABCDEFGHIJKLMNOPQRSTUVXYZ !###$//.;");
     set_color(Colors::Grey);
-    println!("Lucas ABCDEFGHIJKLMNOPQRSTUVXYZ !###$//.;");
+    println!("Billy ABCDEFGHIJKLMNOPQRSTUVXYZ !###$//.;");
     set_color(Colors::BrightBlue);
-    println!("Lucas ABCDEFGHIJKLMNOPQRSTUVXYZ !###$//.;");
+    println!("Billy ABCDEFGHIJKLMNOPQRSTUVXYZ !###$//.;");
     set_color(Colors::BrightGreen);
-    println!("Lucas ABCDEFGHIJKLMNOPQRSTUVXYZ !###$//.;");
+    println!("Billy ABCDEFGHIJKLMNOPQRSTUVXYZ !###$//.;");
     set_color(Colors::BrightCyan);
-    println!("Lucas ABCDEFGHIJKLMNOPQRSTUVXYZ !###$//.;");
+    println!("Billy ABCDEFGHIJKLMNOPQRSTUVXYZ !###$//.;");
     set_color(Colors::BrightRed);
-    println!("Lucas ABCDEFGHIJKLMNOPQRSTUVXYZ !###$//.;");
+    println!("Billy ABCDEFGHIJKLMNOPQRSTUVXYZ !###$//.;");
     set_color(Colors::BrightPurple);
-    println!("Lucas ABCDEFGHIJKLMNOPQRSTUVXYZ !###$//.;");
+    println!("Billy ABCDEFGHIJKLMNOPQRSTUVXYZ !###$//.;");
     set_color(Colors::BrightYellow);
-    println!("Lucas ABCDEFGHIJKLMNOPQRSTUVXYZ !###$//.;");
+    println!("Billy ABCDEFGHIJKLMNOPQRSTUVXYZ !###$//.;");
     set_color(Colors::BrightWhite);
-    println!("Lucas ABCDEFGHIJKLMNOPQRSTUVXYZ !###$//.;");
+    println!("Billy ABCDEFGHIJKLMNOPQRSTUVXYZ !###$//.;");
 }
 
 /// Return the parsed integer and remaining slice if successful.
