@@ -1,6 +1,8 @@
 #![no_std]
 #![no_main]
+#![feature(panic_info_message)]
 #![feature(naked_functions)]
+
 
 mod vga;
 mod utils;
