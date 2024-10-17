@@ -1,6 +1,6 @@
 use atoi::FromRadix10;
 
-use crate::{interface::{set_color, Colors}, print, println};
+use crate::{vga::{set_color, Colors}, print, println};
 
 pub fn print_header() {
     let ft_color = Colors::BrightYellow;

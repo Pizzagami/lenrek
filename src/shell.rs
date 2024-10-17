@@ -1,4 +1,4 @@
-use crate::{gdt, print, println, interface::{self, get_color, Colors}, utils::{self, get_kernel_address}, idt, printdel};
+use crate::{gdt, print, println, vga::{self, get_color, Colors}, utils::{self, get_kernel_address}, idt, printdel};
 
 fn print_gdt() {
     gdt::print_gdt();
@@ -73,16 +73,16 @@ Type `help <command>` for help on a specific command.";
 pub fn print_prompt() {
     let prompt = ">> ";
     let color = get_color();
-    interface::set_color(Colors::White);
+    vga::set_color(Colors::White);
     print!("{}", prompt);
-    interface::set_color(color);
+    vga::set_color(color);
 }
 
 fn set_color(s: Option<&[u8]>) {
     match s {
         Some(color_str) => {
-            let color = interface::color_str_to_color(color_str).unwrap_or(Colors::White);
-            interface::set_color(color);
+            let color = vga::color_str_to_color(color_str).unwrap_or(Colors::White);
+            vga::set_color(color);
         }
         None => {}
     }
