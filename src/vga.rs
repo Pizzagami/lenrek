@@ -167,11 +167,11 @@ impl Cell {
                 self.row -= 1;
             }
             self.col = WIDTH - 1;
-            self.buffer.pix[self.row][self.col].character = b' ';
+            self.buffer.pix[self.row][self.col].char = b' ';
         }
         else {
             self.col -= 1;
-            self.buffer.pix[self.row][self.col].character = b' ';
+            self.buffer.pix[self.row][self.col].char = b' ';
         }
         self.set_cursor_position();
     }
