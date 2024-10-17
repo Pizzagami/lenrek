@@ -49,9 +49,9 @@ pub extern "C" fn main() -> ! {
 
     cli!();
 
-    interface::reset_screen();
+    vga::reset_screen();
     utils::print_header();
-    interface::set_color(Colors::White);
+    vga::set_color(Colors::White);
     println!();
 
     shell::print_prompt();
@@ -69,13 +69,13 @@ fn panic(_info: &core::panic::PanicInfo) -> ! {
     let message =  _info.message().unwrap_or(&arg);
     let location = _info.location().unwrap();
 
-    interface::set_color(Colors::BrightRed);
+    vga::set_color(Colors::BrightRed);
     print!("[PANIC ");
-    interface::set_color(Colors::BrightWhite);
+    vga::set_color(Colors::BrightWhite);
     print!("{}", location);
-    interface::set_color(Colors::BrightRed);
+    vga::set_color(Colors::BrightRed);
     print!("]: ");
-    interface::set_color(Colors::BrightWhite);
+    vga::set_color(Colors::BrightWhite);
     println!("{}", message);
     loop {}
 }
