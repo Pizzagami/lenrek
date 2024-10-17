@@ -204,14 +204,14 @@ macro_rules! println {
 macro_rules! print {
     () => {};
     ($($arg:tt)*) => {
-        crate::CELL::_print(format_args!($($arg)*));
+        crate::vga::_print(format_args!($($arg)*));
     };
 }
 
 #[macro_export]
 macro_rules! printdel {
     () => {
-        crate::CELL::_del();
+        crate::vga::_del();
     };
 }
 
