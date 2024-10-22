@@ -5,7 +5,7 @@
 //! the `Debug` struct that implements the `fmt::Write` trait, allowing formatted strings to be sent
 //! over the serial port.
 
-use crate::utils::io::{inb, outb};
+use crate::tools::io::{inb, outb};
 use core::fmt;
 use lazy_static::lazy_static;
 use spin::Mutex;

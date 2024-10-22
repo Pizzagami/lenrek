@@ -46,17 +46,24 @@ pub extern "C" fn _start() -> ! {
 #[no_mangle]
 pub extern "C" fn main() -> ! {
 
+    //interrupts::disable();
+    debug::init_serial_port();
     gdt::init();
     idt::init();
+    //interrupts::init();
 
     cli!();
-
+    memory::physical_memory_managment::physical_memory_manager_init();
+    unsafe { memory::page_directory::init_page_directory() };
+    memory::page_directory::enable_paging();
     vga::reset_screen();
     utils::print_header();
     vga::set_color(Colors::White);
     println!();
 
     shell::print_prompt();
+    memory::vmalloc::vmalloc_test();
+	memory::kmalloc::kmalloc_test();
 
     sti!();
     loop {
