@@ -11,11 +11,8 @@ cc = "1.0.83"
 atoi = { version = "2.0.0", default-features = false }
 once_cell = { version = "1.19.0", default-features = false }
 spin = "0.9.8"
+bitflags = "1.2.1"
 
 [dependencies.lazy_static]
 version = "1.4.0"
 features = ["spin_no_std"]
-
-[dependencies]
-spin = "0.9.8"
-bitflags = "1.2.1"
