@@ -17,6 +17,7 @@ mod memory;
 mod asm;
 
 use vga::Colors;
+use crate::tools::debug;
 
 #[allow(dead_code)]
 pub struct MultibootHeader {
