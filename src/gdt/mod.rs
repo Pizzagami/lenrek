@@ -17,7 +17,7 @@ pub struct GdtEntry {
     pub base_high: u8
 }
 
-struct GdtTable {
+pub struct GdtTable {
     pub gdt: &'static mut [GdtEntry; GDT_ENTRY_AMOUNT]
 }
 impl Default for GdtTable {
