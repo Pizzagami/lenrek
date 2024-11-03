@@ -1,6 +1,6 @@
 
-use crate::utils::debug::LogLevel;
-use crate::utils::io::inb;
+use crate::tools::debug::LogLevel;
+use crate::tools::io::inb;
 use crate::{
 	exceptions::{
 		keyboard::{BUFFER_HEAD, KEYBOARD_INTERRUPT_RECEIVED, SCANCODE_BUFFER},
