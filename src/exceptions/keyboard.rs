@@ -140,8 +140,6 @@ fn update_modifier_state(scancode: u8) {
 				WRITER.lock().hide_cursor();
 			}
 			0xc2 => {
-				PARROT_ACTIVATED.store(true, Ordering::SeqCst);
-				WRITER.lock().hide_cursor();
 			}
 			0x43 => print_header(),
 			0x44 => change_keyboard_layout(),
