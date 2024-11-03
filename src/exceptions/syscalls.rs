@@ -1,4 +1,4 @@
-use crate::utils::debug::LogLevel;
+use crate::tools::debug::LogLevel;
 
 #[derive(Debug, Clone, Copy)]
 pub enum SyscallNumber {

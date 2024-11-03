@@ -1,7 +1,7 @@
 use crate::exceptions::interrupts::InterruptStackFrame;
 use crate::shell::prints::PrintStackMode;
-use crate::utils::debug::LogLevel;
-use crate::utils::librs::{hexdump, hlt};
+use crate::tools::debug::LogLevel;
+use crate::tools::librs::{hexdump, hlt};
 use core::arch::asm;
 use core::fmt::Display;
 
