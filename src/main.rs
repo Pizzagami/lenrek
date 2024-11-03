@@ -4,6 +4,7 @@
 #![feature(naked_functions)]
 #[macro_use]
 mod macros;
+#[macro_use]
 mod vga;
 mod utils;
 mod tools;
