@@ -62,7 +62,7 @@ use once_cell::unsync::Lazy;
 use spin::Mutex;
 use crate::{println, print};
 
-static GDT: Mutex<Lazy<GdtTable>> = Mutex::new(Lazy::new(|| GdtTable::default()));
+pub static GDT: Mutex<Lazy<GdtTable>> = Mutex::new(Lazy::new(|| GdtTable::default()));
 
 pub fn init()
 {

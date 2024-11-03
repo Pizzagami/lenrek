@@ -153,7 +153,7 @@ fn irq_remap()
 use once_cell::unsync::Lazy;
 use spin::Mutex;
 
-static _IDT: Mutex<Lazy<IdtTable>> = Mutex::new(Lazy::new(|| IdtTable::default()));
+pub static _IDT: Mutex<Lazy<IdtTable>> = Mutex::new(Lazy::new(|| IdtTable::default()));
 
 pub fn reboot() {
     let mut idt_ptr: IdtPtr = IdtPtr::default();

@@ -67,7 +67,6 @@ pub fn print_stack(line: &str, mode: PrintStackMode) {
 
 	let mut parts = args.split_whitespace();
 
-	// Determine the address to use for the hex dump
 	let address = match parts.next() {
 		Some("esp") => {
 			let esp: usize;
