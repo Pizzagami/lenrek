@@ -13,6 +13,7 @@ mod asm;
 mod exceptions;
 
 use crate::tools::debug;
+use crate::exceptions::interrupts;
 
 #[allow(dead_code)]
 pub struct MultibootHeader {

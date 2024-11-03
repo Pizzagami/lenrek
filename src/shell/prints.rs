@@ -6,8 +6,8 @@
 
 use crate::exceptions::interrupts;
 use crate::shell::builtins::clear;
-use crate::structures::gdt::GDT;
-use crate::structures::idt::IDT;
+use crate::idt::IDT;
+use crate::gdt::GDT;
 use crate::tools::librs::hexdump;
 use crate::tools::prompt;
 use crate::tools::video_graphics_array::WRITER;
