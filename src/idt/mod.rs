@@ -1,5 +1,6 @@
 use core::mem::size_of;
 use core::ffi::c_void;
+use crate::exceptions::interrupts::keyboard_interrupt;
 
 use crate::{print, println, sti, cli};
 use core::arch::asm;
