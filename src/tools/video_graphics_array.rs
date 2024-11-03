@@ -4,7 +4,6 @@ use crate::tools::prompt;
 use core::fmt;
 use lazy_static::lazy_static;
 use spin::Mutex;
-use crate::vga;
 
 const NUM_SCREENS: usize = 5;
 const SERIAL_SCREEN: usize = 4;
@@ -83,9 +82,6 @@ pub enum ColorCode {
 	White = 0xf,
 }
 
-/// Represents a color code for a character cell in the VGA text buffer.
-///
-/// A color code consists of a foreground color and a background color.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(transparent)]
 struct Color(u8);
@@ -106,9 +102,6 @@ impl Color {
 	}
 }
 
-/// Represents a character cell in the VGA text buffer.
-///
-/// Each cell consists of an ASCII character and its associated color.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(C)]
 struct ScreenChar {
@@ -116,10 +109,6 @@ struct ScreenChar {
 	color: Color,
 }
 
-/// The VGA text buffer.
-///
-/// This struct represents the VGA text buffer and provides methods
-/// for reading and writing characters to it.
 #[repr(transparent)]
 struct VgaBuffer {
 	chars: [[ScreenChar; VGA_COLUMNS]; VGA_ROWS],
@@ -142,10 +131,6 @@ struct ScreenState {
 	buffer: [u8; VGA_BUFFER_SIZE],
 }
 
-/// Writer for the VGA text buffer.
-///
-/// This struct provides methods to write text to the VGA text buffer,
-/// handle new lines, and manage cursor position.
 pub struct Writer {
 	pub column_position: usize,
 	pub row_position: usize,
@@ -415,15 +400,12 @@ pub fn change_display(display: usize) {
 	WRITER.lock().restore_display(display);
 	WRITER.lock().current_display = display;
 	if display != SERIAL_SCREEN {
-		vga::reset_screen();
+		prompt::init();
 	} else {
 		WRITER.lock().clear_row(VGA_LAST_LINE);
 	}
 }
 
-/// Changes the current color of the VGA text buffer.
-///
-/// Toggles between increasing the foreground or background color.
 pub fn change_color(foreground: bool) {
 	interrupts::disable();
 	if foreground {

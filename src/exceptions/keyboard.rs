@@ -1,6 +1,6 @@
 use crate::shell;
 use crate::shell::history::HISTORY;
-use crate::utils::print_header;
+use crate::shell::prints::print_welcome_message;
 use crate::tools::video_graphics_array::WRITER;
 use crate::tools::{prompt, video_graphics_array};
 use core::sync::atomic::{AtomicBool, Ordering};
@@ -33,14 +33,6 @@ pub fn process_keyboard_input() {
 	} else {
 		return;
 	}
-
-	let parrot_activated = PARROT_ACTIVATED.load(Ordering::SeqCst);
-	if parrot_activated {
-		WRITER.lock().show_cursor();
-		PARROT_ACTIVATED.store(false, Ordering::SeqCst);
-		prompt::init();
-	}
-
 	let serial_screen = SERIAL_SCREEN.load(Ordering::SeqCst);
 	if serial_screen {
 		WRITER.lock().show_cursor();
@@ -147,10 +139,8 @@ fn update_modifier_state(scancode: u8) {
 				WRITER.lock().hide_cursor();
 			}
 			0xc2 => {
-				PARROT_ACTIVATED.store(true, Ordering::SeqCst);
-				WRITER.lock().hide_cursor();
 			}
-			0x43 => print_header(),
+			0x43 => print_welcome_message(),
 			0x44 => change_keyboard_layout(),
 			0x47 => prompt::home(),
 			0x52 => {

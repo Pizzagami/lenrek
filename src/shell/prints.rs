@@ -8,14 +8,43 @@ use crate::exceptions::interrupts;
 use crate::shell::builtins::clear;
 use crate::structures::gdt::GDT;
 use crate::structures::idt::IDT;
-use crate::utils::librs::hexdump;
-use crate::vga::prompt;
-use crate::vga::video_graphics_array::WRITER;
+use crate::tools::librs::hexdump;
+use crate::tools::prompt;
+use crate::tools::video_graphics_array::WRITER;
 
 /// Prints an unknown command error message.
 pub fn print_unknown_command(line: &str) {
 	let len = line.len().min(50);
 	println!("Unknown command: {}", line[0..len].trim());
+}
+
+/// Prints the welcome message.
+pub fn print_welcome_message() {
+	clear();
+	println!("                                     :---------:    .---------:---------- ");
+	println!("                                   :#@@@@@@@@%=     +@@@@@@@#::@@@@@@@@@@.");
+	println!("                                 :#@@@@@@@@%=       +@@@@@%:  :@@@@@@@@@@.");
+	println!("                               :#@@@@@@@@%=         +@@@%-    :@@@@@@@@@@.");
+	println!("                             :#@@@@@@@@@=           +@%-      :@@@@@@@@@@.");
+	println!("                           :#@@@@@@@@@=             =-        -@@@@@@@@@@ ");
+	println!("                         :#@@@@@@@@@=                        +@@@@@@@@@*. ");
+	println!("                       :#@@@@@@@@@=                        +@@@@@@@@@*.   ");
+	println!("                     :#@@@@@@@@@=                        +@@@@@@@@@*.     ");
+	println!("                   :#@@@@@@@@@=                        +@@@@@@@@@*.       ");
+	println!("                 :#@@@@@@@@@=                        +@@@@@@@@@+.         ");
+	println!("                 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    +@@@@@@@@@#        :#.");
+	println!("                 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    +@@@@@@@@@#      :#@@.");
+	println!("                 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    +@@@@@@@@@#    :#@@@@.");
+	println!("                 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    +@@@@@@@@@#  :#@@@@@@.");
+	println!("                 ....................=@@@@@@@@@@    +@@@@@@@@@#:#@@@@@@@@.");
+	println!("                                     -@@@@@@@@@@     .................... ");
+	println!("                                     -@@@@@@@@@@     by                   ");
+	println!("                                     -@@@@@@@@@@          Alix Muller     ");
+	println!("                                     -@@@@@@@@@@       Lorenzo Simanic    ");
+	println!("                                     .----------                          ");
+	println!("");
+	println!("                       Welcome to KFS! Type 'help' for a list of commands!");
+	prompt::init();
 }
 
 #[derive(Copy, Clone)]
@@ -109,13 +138,11 @@ pub fn help() {
 	);
 	print_help_line("cpu", "display the CPU information");
 	print_help_line("mode", "display the current system mode");
-	print_help_line("miao", "print a cat");
 	print_help_line("uname", "print system information");
 	print_help_line("halt", "halt the system");
 	print_help_line("shutdown | reboot", "shutdown | reboot the system");
 	printraw("lmmmmmmmmmmmmmmmmmmmmmmmnmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmYZ");
 	print_help_line("F1 -> F5", "change between screens");
-	print_help_line("F8", "parrot stroke activated");
 	print_help_line("F9", "display welcome message");
 	print_help_line("F10", "change keyboard layout");
 	print_help_line("F11 | F12", "switch text | background color");

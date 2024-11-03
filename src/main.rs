@@ -4,12 +4,10 @@
 #![feature(naked_functions)]
 #[macro_use]
 mod macros;
-mod utils;
 mod tools;
 mod gdt;
 mod shell;
 mod idt;
-mod keyboards;
 mod memory;
 mod asm;
 mod exceptions;
@@ -58,8 +56,7 @@ pub extern "C" fn main() -> ! {
     memory::physical_memory_managment::physical_memory_manager_init();
     unsafe { memory::page_directory::init_page_directory() };
     memory::page_directory::enable_paging();
-    utils::print_header();
-    prompt::init();
+    prints::print_welcome_message();
 	memory::vmalloc::vmalloc_test();
 	memory::kmalloc::kmalloc_test();
 
@@ -71,13 +68,6 @@ pub extern "C" fn main() -> ! {
 }
 
 #[panic_handler]
-fn panic(_info: &core::panic::PanicInfo) -> ! {
-    let arg = format_args!("");
-    let message =  _info.message().unwrap_or(&arg);
-    let location = _info.location().unwrap();
-    print!("[PANIC ");
-    print!("{}", location);
-    print!("]: ");
-    println!("{}", message);
-    loop {}
+fn panic(info: &PanicInfo) -> ! {
+	handle_panic(info, None);
 }
