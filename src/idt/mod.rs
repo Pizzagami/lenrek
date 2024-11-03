@@ -3,6 +3,7 @@ use core::ffi::c_void;
 
 use crate::{print, println, sti, cli};
 use core::arch::asm;
+use crate::asm;
 
 const IDT_ENTRY_AMOUT: usize = 256;
 
