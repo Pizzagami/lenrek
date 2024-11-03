@@ -1,7 +1,6 @@
 use crate::tools::debug::LogLevel;
 use crate::log;
 use crate::print_serial;
-#[macro_use]
 
 use super::page_directory::{map_address, unmap_address, PAGE_SIZE};
 
