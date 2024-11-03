@@ -18,35 +18,6 @@ pub fn print_unknown_command(line: &str) {
 	println!("Unknown command: {}", line[0..len].trim());
 }
 
-/// Prints the welcome message.
-pub fn print_welcome_message() {
-	clear();
-	println!("                                     :---------:    .---------:---------- ");
-	println!("                                   :#@@@@@@@@%=     +@@@@@@@#::@@@@@@@@@@.");
-	println!("                                 :#@@@@@@@@%=       +@@@@@%:  :@@@@@@@@@@.");
-	println!("                               :#@@@@@@@@%=         +@@@%-    :@@@@@@@@@@.");
-	println!("                             :#@@@@@@@@@=           +@%-      :@@@@@@@@@@.");
-	println!("                           :#@@@@@@@@@=             =-        -@@@@@@@@@@ ");
-	println!("                         :#@@@@@@@@@=                        +@@@@@@@@@*. ");
-	println!("                       :#@@@@@@@@@=                        +@@@@@@@@@*.   ");
-	println!("                     :#@@@@@@@@@=                        +@@@@@@@@@*.     ");
-	println!("                   :#@@@@@@@@@=                        +@@@@@@@@@*.       ");
-	println!("                 :#@@@@@@@@@=                        +@@@@@@@@@+.         ");
-	println!("                 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    +@@@@@@@@@#        :#.");
-	println!("                 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    +@@@@@@@@@#      :#@@.");
-	println!("                 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    +@@@@@@@@@#    :#@@@@.");
-	println!("                 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    +@@@@@@@@@#  :#@@@@@@.");
-	println!("                 ....................=@@@@@@@@@@    +@@@@@@@@@#:#@@@@@@@@.");
-	println!("                                     -@@@@@@@@@@     .................... ");
-	println!("                                     -@@@@@@@@@@     by                   ");
-	println!("                                     -@@@@@@@@@@          Alix Muller     ");
-	println!("                                     -@@@@@@@@@@       Lorenzo Simanic    ");
-	println!("                                     .----------                          ");
-	println!("");
-	println!("                       Welcome to KFS! Type 'help' for a list of commands!");
-	prompt::init();
-}
-
 #[derive(Copy, Clone)]
 pub enum PrintStackMode {
 	Vga,

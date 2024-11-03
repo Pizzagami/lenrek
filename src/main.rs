@@ -49,23 +49,19 @@ pub extern "C" fn _start() -> ! {
 #[no_mangle]
 pub extern "C" fn main() -> ! {
 
-    //interrupts::disable();
+    interrupts::disable();
     debug::init_serial_port();
     gdt::init();
     idt::init();
-    //interrupts::init();
+    interrupts::init();
 
     cli!();
     memory::physical_memory_managment::physical_memory_manager_init();
     unsafe { memory::page_directory::init_page_directory() };
     memory::page_directory::enable_paging();
-    vga::reset_screen();
     utils::print_header();
-    vga::set_color(Colors::White);
-    println!();
-
-    shell::print_prompt();
-    memory::vmalloc::vmalloc_test();
+    prompt::init();
+	memory::vmalloc::vmalloc_test();
 	memory::kmalloc::kmalloc_test();
 
     sti!();
@@ -76,18 +72,6 @@ pub extern "C" fn main() -> ! {
 }
 
 #[panic_handler]
-fn panic(_info: &core::panic::PanicInfo) -> ! {
-    let arg = format_args!("");
-    let message =  _info.message().unwrap_or(&arg);
-    let location = _info.location().unwrap();
-
-    vga::set_color(Colors::BrightRed);
-    print!("[PANIC ");
-    vga::set_color(Colors::BrightWhite);
-    print!("{}", location);
-    vga::set_color(Colors::BrightRed);
-    print!("]: ");
-    vga::set_color(Colors::BrightWhite);
-    println!("{}", message);
-    loop {}
+fn panic(info: &core::panic::PanicInfo) -> ! {
+	handle_panic(info, None);
 }
