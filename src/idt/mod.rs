@@ -1,5 +1,6 @@
 use core::mem::size_of;
 use core::ffi::c_void;
+use crate::exception::interrupts::keyboard_interrupt;
 
 use crate::{print, println, sti, cli};
 use crate::asm;
@@ -8,10 +9,7 @@ const IDT_ENTRY_AMOUT: usize = 256;
 
 pub fn handle_keypress() {
     let knbr = asm::inb(0x60);
-    if knbr > 127 {
-        key_unpress(knbr);
-    } else {
-        key_press(knbr);
+    keyboard_interrupt(knbr);
     }
 }
 

@@ -16,7 +16,6 @@ use crate::shell::prints;
 use crate::tools::debug;
 use core::panic::PanicInfo;
 use exceptions::{interrupts, keyboard::process_keyboard_input, panic::handle_panic};
-use memory::physical_memory_managment::HIGH_KERNEL_OFFSET;
 
 #[allow(dead_code)]
 pub struct MultibootHeader {
