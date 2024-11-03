@@ -3,9 +3,17 @@ use core::ffi::c_void;
 
 use crate::{print, println, sti, cli};
 use crate::asm;
-use crate::exceptions::interrupts::keyboard_interrupt;
 
 const IDT_ENTRY_AMOUT: usize = 256;
+
+pub fn handle_keypress() {
+    let knbr = asm::inb(0x60);
+    if knbr > 127 {
+        key_unpress(knbr);
+    } else {
+        key_press(knbr);
+    }
+}
 
 extern "C" {
     fn isr_stub_0();
@@ -153,7 +161,7 @@ fn irq_remap()
 use once_cell::unsync::Lazy;
 use spin::Mutex;
 
-pub static _IDT: Mutex<Lazy<IdtTable>> = Mutex::new(Lazy::new(|| IdtTable::default()));
+static _IDT: Mutex<Lazy<IdtTable>> = Mutex::new(Lazy::new(|| IdtTable::default()));
 
 pub fn reboot() {
     let mut idt_ptr: IdtPtr = IdtPtr::default();
@@ -249,8 +257,8 @@ extern "C" fn exception_handler(reg: Regs) {
 #[no_mangle]
 extern "C" fn irq_handler(reg: Regs) {
     cli!();
-    match reg.int_no { 
-        1 => { keyboard_interrupt(); }
+    match reg.int_no {
+        1 => { handle_keypress(); }
         12 => { asm::inb(0x60); }
         _ => { }
     }
