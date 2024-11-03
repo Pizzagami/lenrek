@@ -96,7 +96,7 @@ pub fn hexdump(mut address: usize, limit: usize, mode: PrintStackMode) {
 			if i != 0 {
 				print_hex_line(address - 16, 16, mode);
 				match mode {
-					PrintStackMode::Vga => printtln!(""),
+					PrintStackMode::Vga => println!(""),
 					PrintStackMode::Serial => println_serial!(""),
 				}
 			}
@@ -142,7 +142,7 @@ pub fn hexdump(mut address: usize, limit: usize, mode: PrintStackMode) {
 	}
 
 	match mode {
-		PrintStackMode::Vga => printtln!(""),
+		PrintStackMode::Vga => println!(""),
 		PrintStackMode::Serial => println_serial!(""),
 	}
 }

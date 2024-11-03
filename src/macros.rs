@@ -4,12 +4,12 @@ use crate::tools::video_graphics_array::{WriteMode, WRITER};
 use core::fmt;
 
 #[macro_export]
-macro_rules! printt {
+macro_rules! print {
 	($($arg:tt)*) => ($crate::macros::print(format_args!($($arg)*)));
 }
 
 #[macro_export]
-macro_rules! printtln {
+macro_rules! println {
 	() => (print!("\n"));
 	($($arg:tt)*) => (print!("{}\n", format_args!($($arg)*)));
 }
