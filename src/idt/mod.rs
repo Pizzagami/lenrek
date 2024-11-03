@@ -3,7 +3,7 @@ use core::ffi::c_void;
 
 use crate::{print, println, sti, cli};
 use crate::asm;
-use crate::keyboards::handle_keypress;
+use crate::exceptions::interrupts::keyboard_interrupt;
 
 const IDT_ENTRY_AMOUT: usize = 256;
 
@@ -249,8 +249,8 @@ extern "C" fn exception_handler(reg: Regs) {
 #[no_mangle]
 extern "C" fn irq_handler(reg: Regs) {
     cli!();
-    match reg.int_no {
-        1 => { handle_keypress(); }
+    match reg.int_no { 
+        1 => { keyboard_interrupt(); }
         12 => { asm::inb(0x60); }
         _ => { }
     }
