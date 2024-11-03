@@ -75,8 +75,11 @@ pub fn print_stack(line: &str, mode: PrintStackMode) {
 			}
 			esp
 		}
-		Some("gdt") => unsafe {
-			GDT  as usize;
+		Some("gdt") => {
+			let gdt_address: usize;
+			unsafe {
+				gdt_address = &*GDT.lock().gdt as *const _ as usize;
+			}
 		}
 		Some("idt") => {
 			let offset: usize;
