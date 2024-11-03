@@ -16,7 +16,7 @@
 //! color. The color byte specifies the foreground and background color
 //! of the character cell.
 
-use crate::exceptions::interrupts;
+use crate::interrupts;
 use crate::tools::io::outb;
 use crate::vga::prompt;
 use core::fmt;
