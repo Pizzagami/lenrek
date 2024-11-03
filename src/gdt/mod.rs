@@ -8,7 +8,7 @@ extern "C" {
 
 #[derive(Debug)]
 #[repr(C, packed)]
-struct GdtEntry {
+pub struct GdtEntry {
     pub limit_low: u16,
     pub base_low: u16,
     pub base_middle: u8,
