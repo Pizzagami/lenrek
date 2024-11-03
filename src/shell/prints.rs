@@ -85,7 +85,7 @@ pub fn print_stack(line: &str, mode: PrintStackMode) {
 		Some("idt") => {
 			let offset: usize;
 			unsafe {
-				offset = &_IDT as *const _ as usize;;
+				offset = &_IDT as *const _ as usize;
 			}
 			offset
 		}
