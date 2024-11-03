@@ -6,6 +6,7 @@
 
 mod vga;
 mod utils;
+mod tools;
 mod gdt;
 mod shell;
 mod idt;
