@@ -14,7 +14,6 @@ mod memory;
 mod asm;
 mod exceptions;
 
-use vga::Colors;
 use crate::tools::debug;
 
 #[allow(dead_code)]
@@ -72,6 +71,13 @@ pub extern "C" fn main() -> ! {
 }
 
 #[panic_handler]
-fn panic(info: &core::panic::PanicInfo) -> ! {
-	handle_panic(info, None);
+fn panic(_info: &core::panic::PanicInfo) -> ! {
+    let arg = format_args!("");
+    let message =  _info.message().unwrap_or(&arg);
+    let location = _info.location().unwrap();
+    print!("[PANIC ");
+    print!("{}", location);
+    print!("]: ");
+    println!("{}", message);
+    loop {}
 }
