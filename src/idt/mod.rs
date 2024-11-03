@@ -8,8 +8,7 @@ use crate::asm;
 const IDT_ENTRY_AMOUT: usize = 256;
 
 pub fn handle_keypress() {
-    let knbr = asm::inb(0x60);
-    keyboard_interrupt(knbr);
+    handler!(keyboard_interrupt);
 }
 
 extern "C" {
