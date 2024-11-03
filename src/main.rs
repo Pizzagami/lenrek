@@ -14,7 +14,7 @@ mod idt;
 mod keyboard;
 mod memory;
 mod asm;
-mod interrupts;
+mod exceptions;
 
 use vga::Colors;
 use crate::tools::debug;
