@@ -3,12 +3,12 @@
 #![feature(panic_info_message)]
 #![feature(naked_functions)]
 #[macro_use]
+mod macros;
 mod vga;
 mod utils;
 mod tools;
 mod gdt;
 mod shell;
-mod macros;
 mod idt;
 mod keyboard;
 mod memory;
