@@ -2,6 +2,8 @@
 use crate::tools::debug::LogLevel;
 use crate::tools::io::inb;
 use crate::{
+	exceptions::
+		keyboard::{BUFFER_HEAD, KEYBOARD_INTERRUPT_RECEIVED, SCANCODE_BUFFER},
 		pic8259::ChainedPics,
 	},
 	memory::{
