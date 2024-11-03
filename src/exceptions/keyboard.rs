@@ -67,7 +67,7 @@ pub fn process_keyboard_input() {
 					.insert_char(c as u8, INSERT_PRESSED.load(Ordering::SeqCst));
 			} else if ctrl {
 				if c == b'l' {
-					shell::builtins::clear();
+					vga::reset_screen();
 					prompt::init();
 				} else if c == b'c' {
 					prompt::init();

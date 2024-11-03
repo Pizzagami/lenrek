@@ -13,6 +13,9 @@ pub enum PrintStackMode {
 	Vga,
 	Serial,
 }
+
+pub type Line = [u8; MAX_LINE_LENGTH];
+
 /// Compares two arrays of bytes.
 pub fn array_cmp(a: &Line, b: &Line) -> bool {
 	a.iter().zip(b.iter()).all(|(&x, &y)| x == y)

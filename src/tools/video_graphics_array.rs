@@ -19,10 +19,6 @@ const VGA_CTRL_REGISTER: u16 = 0x3d4;
 const VGA_DATA_REGISTER: u16 = 0x3d5;
 
 lazy_static! {
-	/// Global writer instance for the VGA buffer.
-	///
-	/// This writer is used to write text to the VGA text buffer.
-	/// It is protected by a mutex to ensure safe concurrent access.
 	pub static ref WRITER: Mutex<Writer> = Mutex::new(Writer {
 		column_position: 0,
 		row_position: 0,
