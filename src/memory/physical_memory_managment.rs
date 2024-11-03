@@ -199,7 +199,6 @@ impl PhysicalMemoryManager {
 			self.used_blocks,
 			self.max_blocks
 		);
-		//let pmm = unsafe { &mut *(PMM_ADDRESS as *mut PhysicalMemoryManager) };
 
 		if self.used_blocks >= self.max_blocks {
 			return Err("Out of memory");
