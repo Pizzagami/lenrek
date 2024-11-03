@@ -63,9 +63,7 @@ pub extern "C" fn main() -> ! {
     vga::reset_screen();
     utils::print_header();
     vga::set_color(Colors::White);
-    println!();
-
-    shell::print_prompt();
+    prints::print_welcome_message();
     memory::vmalloc::vmalloc_test();
 	memory::kmalloc::kmalloc_test();
 

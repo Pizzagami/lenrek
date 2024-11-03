@@ -1,6 +1,7 @@
 pub mod us;
 pub mod fr;
 
+use core::ptr::read;
 use crate::asm;
 use crate::shell;
 
