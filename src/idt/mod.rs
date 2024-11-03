@@ -109,7 +109,7 @@ struct IdtPtr {
     base: u32
 }
 
-struct IdtTable {
+pub struct IdtTable {
     pub _idt: &'static mut [IdtEntry; IDT_ENTRY_AMOUT]
 }
 
