@@ -2,7 +2,6 @@
 use crate::tools::io::{inb, outb};
 use core::arch::asm;
 use crate::print_serial;
-use crate shell::history::Line;
 
 const WIDTH: usize = 80;
 
