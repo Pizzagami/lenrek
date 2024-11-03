@@ -1,9 +1,14 @@
 use crate::exceptions::interrupts::InterruptStackFrame;
-use crate::shell::prints::PrintStackMode;
 use crate::tools::debug::LogLevel;
 use crate::tools::librs::{hexdump, hlt};
 use core::arch::asm;
 use core::fmt::Display;
+
+#[derive(Copy, Clone)]
+pub enum PrintStackMode {
+	Vga,
+	Serial,
+}
 
 const STACK_DUMP_SIZE: usize = 1024;
 static mut STACK_DUMP: [u8; STACK_DUMP_SIZE] = [0; STACK_DUMP_SIZE];

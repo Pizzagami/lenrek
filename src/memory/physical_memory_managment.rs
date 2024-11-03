@@ -1,7 +1,6 @@
 use core::{mem::size_of, ptr::addr_of};
 use crate::print_serial;
 use super::page_directory::{PAGE_DIRECTORY_ADDR, PAGE_TABLES_ADDR, PAGE_TABLE_SIZE};
-use crate::boot::multiboot::{MultibootMemoryMapEntry, MultibootMemoryMapTag};
 use lazy_static::lazy_static;
 use spin::Mutex;
 
@@ -21,6 +20,25 @@ const KERNEL_SPACE_END: u32 = 0xFFFFFFFF;
 
 pub static mut PMM_ADDRESS: u32 = 0;
 pub static mut PAGE_TABLE_END: u32 = 0;
+
+#[derive(Debug)]
+#[repr(C)]
+pub struct MultibootMemoryMapEntry {
+	pub address: u64,
+	pub len: u64,
+	pub entry_type: u32,
+	zero: u32,
+}
+
+#[derive(Debug)]
+#[repr(C)]
+pub struct MultibootMemoryMapTag {
+	tag_type: u32,
+	pub size: u32,
+	pub entry_size: u32,
+	pub entry_version: u32,
+	pub entries: [MultibootMemoryMapEntry; 1],
+}
 
 pub static mut MEMORY_MAP: u32 = 0;
 #[derive(Clone, Copy, Debug)]
