@@ -1,18 +1,18 @@
-//! # Utility Functions for Kernel Operations
-//!
-//! This module provides various utility functions essential for kernel operations,
-//! including string manipulation, reading real-time clock data from CMOS, and performing hex dumps.
-//! These functions are for handling shell input, displaying system time, and debugging.
 
-use crate::shell::prints::PrintStackMode;
-use crate::shell::{builtins::MAX_LINE_LENGTH, history::Line};
 use crate::tools::io::{inb, outb};
 use core::arch::asm;
 use crate::print_serial;
 
+const WIDTH: usize = 80;
+
 const CMOS_ADDRESS: u16 = 0x70;
 const CMOS_DATA: u16 = 0x71;
 
+#[derive(Copy, Clone)]
+pub enum PrintStackMode {
+	Vga,
+	Serial,
+}
 /// Compares two arrays of bytes.
 pub fn array_cmp(a: &Line, b: &Line) -> bool {
 	a.iter().zip(b.iter()).all(|(&x, &y)| x == y)
@@ -26,7 +26,7 @@ pub fn array_to_str(arr: &Line) -> &str {
 
 /// Converts a string slice to an array of bytes.
 pub fn str_to_array(s: &str) -> Line {
-	let mut line = [0; MAX_LINE_LENGTH];
+	let mut line = [0; WIDTH];
 	for (i, c) in s.bytes().enumerate() {
 		line[i] = c;
 	}
