@@ -3,8 +3,6 @@
 #![feature(panic_info_message)]
 #![feature(naked_functions)]
 #[macro_use]
-
-
 mod vga;
 mod utils;
 mod tools;
