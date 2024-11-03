@@ -11,6 +11,7 @@ mod gdt;
 mod shell;
 mod idt;
 mod keyboard;
+mod memory;
 mod asm;
 
 use vga::Colors;
