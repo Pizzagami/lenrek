@@ -1,5 +1,4 @@
 use crate::shell;
-use crate::shell::history::HISTORY;
 use crate::utils::print_header;
 use crate::tools::video_graphics_array::WRITER;
 use crate::tools::{prompt, video_graphics_array};
@@ -90,13 +89,9 @@ fn update_modifier_state(scancode: u8) {
 			0x38 => ALT_GR_PRESSED.store(true, Ordering::SeqCst),
 			0xb8 => ALT_GR_PRESSED.store(false, Ordering::SeqCst),
 			0x47 => prompt::home(),
-			0x48 => HISTORY.lock().scroll_up(),
-			0x49 => HISTORY.lock().scroll_up(),
 			0x4b => prompt::left_arrow(),
 			0x4d => prompt::right_arrow(),
 			0x4f => prompt::end(),
-			0x50 => HISTORY.lock().scroll_down(),
-			0x51 => HISTORY.lock().scroll_down(),
 			0x52 => {
 				let insert = INSERT_PRESSED.load(Ordering::SeqCst);
 				INSERT_PRESSED.store(!insert, Ordering::SeqCst)
@@ -125,8 +120,6 @@ fn update_modifier_state(scancode: u8) {
 			0x4d => prompt::right_arrow(),
 			0x4b => prompt::left_arrow(),
 			0x4f => prompt::end(),
-			0x48 => HISTORY.lock().scroll_up(),
-			0x50 => HISTORY.lock().scroll_down(),
 			0x3b => video_graphics_array::change_display(0),
 			0x3c => video_graphics_array::change_display(1),
 			0x3d => video_graphics_array::change_display(2),
