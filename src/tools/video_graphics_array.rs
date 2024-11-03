@@ -1,6 +1,6 @@
 use crate::exceptions::interrupts;
 use crate::tools::io::outb;
-use crate::vga::prompt;
+use crate::tools::prompt;
 use core::fmt;
 use lazy_static::lazy_static;
 use spin::Mutex;
