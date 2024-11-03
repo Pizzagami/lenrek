@@ -1,27 +1,10 @@
-//! Module for VGA text mode buffer manipulation.
-//!
-//! Provides functionality to write text to the VGA text mode buffer,
-//! which is a common method for displaying text on the screen in many
-//! bare-metal or low-level systems, especially in the context of early
-//! kernel development.
-//!
-//! ## Overview
-//!
-//! The VGA text mode buffer is a region of memory that is mapped to the
-//! display hardware. Writing text to this buffer will cause the text to
-//! be displayed on the screen. The VGA text mode buffer is typically
-//! located at physical address `0xb8000`. The buffer is 25 lines high
-//! and 80 columns wide. Each character cell in the buffer consists of
-//! two bytes: one byte for the ASCII character, and one byte for the
-//! color. The color byte specifies the foreground and background color
-//! of the character cell.
-
 use crate::exceptions::interrupts;
 use crate::tools::io::outb;
 use crate::vga::prompt;
 use core::fmt;
 use lazy_static::lazy_static;
 use spin::Mutex;
+use crate::vga;
 
 const NUM_SCREENS: usize = 5;
 const SERIAL_SCREEN: usize = 4;
