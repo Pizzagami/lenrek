@@ -6,7 +6,7 @@
 
 use crate::exceptions::interrupts;
 use crate::shell::builtins::clear;
-use crate::gdt::_GDT;
+use crate::gdt::GDT;
 use crate::idt::_IDT;
 use crate::tools::librs::hexdump;
 use crate::tools::prompt;
