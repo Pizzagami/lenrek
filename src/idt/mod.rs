@@ -1,9 +1,8 @@
 use core::mem::size_of;
 use core::ffi::c_void;
-use crate::exceptions::interrupts::keyboard_interrupt;
 
 use crate::{print, println, sti, cli};
-use crate::asm;
+use core::arch::asm;
 
 const IDT_ENTRY_AMOUT: usize = 256;
 
