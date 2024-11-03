@@ -80,6 +80,7 @@ pub fn print_stack(line: &str, mode: PrintStackMode) {
 			unsafe {
 				gdt_address = &*GDT.lock().gdt as *const _ as usize;
 			}
+			gdt_address
 		}
 		Some("idt") => {
 			let offset: usize;
