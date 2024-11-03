@@ -1,10 +1,8 @@
 
 use crate::tools::debug::LogLevel;
 use crate::tools::io::inb;
+use crate::exceptions::pic8259::ChainedPics;
 use crate::{
-	exceptions::{
-		pic8259::ChainedPics,
-	},
 	memory::{
 		page_directory::{PAGE_SIZE, PAGE_TABLES_ADDR},
 		page_table::PageTable,
