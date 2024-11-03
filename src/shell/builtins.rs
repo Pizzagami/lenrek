@@ -72,9 +72,6 @@ fn uname() {
 	);
 }
 
-/// Prints the current CPU mode.
-///
-/// Prints the current CPU mode (Real or Protected) along with the value of CR0.
 fn cmd_mode() {
 	let cr0: usize;
 	unsafe {
@@ -246,8 +243,7 @@ pub fn readline(raw_line: &str) {
 	match line {
 		"help" | "man" => help(),
 		"clear" => clear(),
-		"time" => time(),
-		"miao" => miao(),
+		"time" => time(),,
 		"reboot" => reboot(),
 		"halt" => hlt(),
 		"shutdown" => shutdown(),
