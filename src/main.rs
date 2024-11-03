@@ -49,11 +49,11 @@ pub extern "C" fn _start() -> ! {
 #[no_mangle]
 pub extern "C" fn main() -> ! {
 
-    //interrupts::disable();
+    interrupts::disable();
     debug::init_serial_port();
     gdt::init();
     idt::init();
-    //interrupts::init();
+    interrupts::init();
 
     cli!();
     memory::physical_memory_managment::physical_memory_manager_init();
