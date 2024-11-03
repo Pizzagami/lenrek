@@ -6,8 +6,8 @@
 
 use crate::exceptions::interrupts;
 use crate::shell::builtins::clear;
-use crate::idt::IDT;
-use crate::gdt::GDT;
+use crate::gdt::_GDT;
+use crate::idt::_IDT;
 use crate::tools::librs::hexdump;
 use crate::tools::prompt;
 use crate::tools::video_graphics_array::WRITER;
@@ -76,12 +76,12 @@ pub fn print_stack(line: &str, mode: PrintStackMode) {
 			esp
 		}
 		Some("gdt") => unsafe {
-			GDT as usize
+			&_GDT as *const _ as usize;
 		}
 		Some("idt") => {
 			let offset: usize;
 			unsafe {
-				offset = IDT as usize;
+				offset = &_IDT as *const _ as usize;;
 			}
 			offset
 		}
