@@ -66,6 +66,7 @@ pub extern "C" fn main() -> ! {
 
     sti!();
     loop {
+        process_keyboard_input();
         hlt!();
     }
 
