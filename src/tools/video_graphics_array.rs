@@ -17,7 +17,7 @@
 //! of the character cell.
 
 use crate::exceptions::interrupts;
-use crate::utils::io::outb;
+use crate::tools::io::outb;
 use crate::vga::prompt;
 use core::fmt;
 use lazy_static::lazy_static;
