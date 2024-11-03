@@ -2,6 +2,7 @@ use crate::memory::{
 	page_directory::{ENTRY_COUNT, PAGE_SIZE},
 	page_table_entry::{PageTableEntry, PageTableFlags},
 };
+use crate::print_serial;
 
 #[derive(Clone, Copy, Debug)]
 #[repr(C, align(4096))]

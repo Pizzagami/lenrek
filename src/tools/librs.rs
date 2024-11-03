@@ -8,6 +8,7 @@ use crate::shell::prints::PrintStackMode;
 use crate::shell::{builtins::MAX_LINE_LENGTH, history::Line};
 use crate::tools::io::{inb, outb};
 use core::arch::asm;
+use crate::print_serial;
 
 const CMOS_ADDRESS: u16 = 0x70;
 const CMOS_DATA: u16 = 0x71;

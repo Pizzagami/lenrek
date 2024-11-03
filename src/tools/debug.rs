@@ -9,6 +9,7 @@ use crate::tools::io::{inb, outb};
 use core::fmt;
 use lazy_static::lazy_static;
 use spin::Mutex;
+use crate::log;
 
 const SERIAL_PORT: u16 = 0x3f8;
 

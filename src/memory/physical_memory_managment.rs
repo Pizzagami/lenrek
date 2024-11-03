@@ -1,5 +1,5 @@
 use core::{mem::size_of, ptr::addr_of};
-
+use crate::print_serial;
 use super::page_directory::{PAGE_DIRECTORY_ADDR, PAGE_TABLES_ADDR, PAGE_TABLE_SIZE};
 use crate::boot::multiboot::{MultibootMemoryMapEntry, MultibootMemoryMapTag};
 use lazy_static::lazy_static;

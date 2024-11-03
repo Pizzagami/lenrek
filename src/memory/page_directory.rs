@@ -4,6 +4,7 @@ use crate::memory::{
 	page_table_entry::PageTableFlags,
 	physical_memory_managment::HIGH_KERNEL_OFFSET,
 };
+use crate::print_serial;
 use core::arch::asm;
 use core::ptr::null_mut;
 use core::sync::atomic::{AtomicPtr, Ordering};

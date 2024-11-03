@@ -10,15 +10,6 @@ use crate::exceptions::interrupts;
 use crate::tools::video_graphics_array::{WriteMode, WRITER};
 use core::fmt;
 
-/// Macro for printing formatted text to the VGA buffer.
-///
-/// This macro uses the global `WRITER` instance to output text to the VGA text buffer.
-/// It supports variable arguments and formatting, similar to the standard `print!` macro.
-#[macro_export]
-macro_rules! print {
-	($($arg:tt)*) => ($crate::macros::print(format_args!($($arg)*)));
-}
-
 /// Macro for printing formatted text with a newline to the VGA buffer.
 ///
 /// This macro appends a newline character to the text before printing it.
