@@ -436,7 +436,7 @@ pub fn change_display(display: usize) {
 	WRITER.lock().restore_display(display);
 	WRITER.lock().current_display = display;
 	if display != SERIAL_SCREEN {
-		prompt::init();
+		vga::reset_screen();
 	} else {
 		WRITER.lock().clear_row(VGA_LAST_LINE);
 	}
