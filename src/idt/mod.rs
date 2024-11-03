@@ -3,7 +3,7 @@ use core::ffi::c_void;
 
 use crate::{print, println, sti, cli};
 use crate::asm;
-use crate::keyboard::handle_keypress;
+use crate::keyboards::handle_keypress;
 
 const IDT_ENTRY_AMOUT: usize = 256;
 
