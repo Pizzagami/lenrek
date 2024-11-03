@@ -243,7 +243,7 @@ pub fn readline(raw_line: &str) {
 	match line {
 		"help" | "man" => help(),
 		"clear" => clear(),
-		"time" => time(),,
+		"time" => time(),
 		"reboot" => reboot(),
 		"halt" => hlt(),
 		"shutdown" => shutdown(),
