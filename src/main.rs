@@ -11,7 +11,7 @@ mod tools;
 mod gdt;
 mod shell;
 mod idt;
-mod keyboard;
+mod keyboards;
 mod memory;
 mod asm;
 mod exceptions;
