@@ -1,9 +1,4 @@
-//! # Interrupt Handling Module
-//!
-//! Provides functionality for setting up and handling interrupts in an x86 system. This module includes
-//! the initialization of the Programmable Interrupt Controller (PIC), definitions of interrupt handler functions,
-//! and utilities for enabling and disabling interrupts. The module plays a crucial role in the system's
-//! response to hardware and software interrupts.
+
 use crate::utils::debug::LogLevel;
 use crate::utils::io::inb;
 use crate::{

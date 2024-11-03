@@ -1,5 +1,5 @@
 use crate::debug::DEBUG;
-use crate::interrupts;
+use crate::exceptions::interrupts;
 use crate::tools::video_graphics_array::{WriteMode, WRITER};
 use core::fmt;
 
