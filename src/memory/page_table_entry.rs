@@ -1,5 +1,6 @@
 use crate::memory::physical_memory_managment::PMM;
 use bitflags::bitflags;
+use crate::print_serial;
 
 bitflags! {
 	pub struct PageTableFlags: u32 {
