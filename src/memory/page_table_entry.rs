@@ -25,24 +25,19 @@ pub struct PageTableEntry {
 }
 
 impl PageTableEntry {
-	/// Creates a new PageTableEntry with zeroed flags
 	pub fn new() -> Self {
 		PageTableEntry { value: 0 }
 	}
 
-	/// Creates a new PageTableEntry from the given frame address and flags
 	pub fn set_frame_address(&mut self, frame_address: u32, flags: PageTableFlags) {
 		self.value = frame_address | flags.bits();
 	}
 
-	/// Sets the flags for this page table entry
 	pub fn set_flags(&mut self, flags: PageTableFlags) {
 		self.value = (self.value & PageTableFlags::FRAME.bits()) | flags.bits();
 	}
 
-	/// Allocates a new frame for this entry.
 	pub fn alloc_new(&mut self) {
-		// BIEN VERIFIER QUE CA MARCHE
 		print_serial!("Allocating new frame for page table entry...");
 		let frame = PMM
 			.lock()
@@ -57,7 +52,6 @@ impl PageTableEntry {
 		print_serial!("Frame allocated at {:?}\n", frame.unwrap());
 	}
 
-	/// Returns the frame address for this entry.
 	pub fn frame(&self) -> u32 {
 		self.value & PageTableFlags::FRAME.bits()
 	}
