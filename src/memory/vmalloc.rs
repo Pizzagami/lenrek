@@ -17,7 +17,6 @@ pub static mut VMALLOC_BREAK: *mut u8 = core::ptr::null_mut();
 pub static mut MAX_ALLOCATION_SIZE: usize = 0;
 
 #[repr(C, packed)]
-/// Structure of a vmalloc header
 pub struct VmallocHeader {
 	prev: *mut VmallocHeader,
 	next: *mut VmallocHeader,
@@ -49,7 +48,7 @@ impl VmallocHeader {
 		self.used = 0;
 	}
 
-	/// SETTERS
+
 	fn set_status(&mut self, status: u16) {
 		self.used = status;
 	}
@@ -58,7 +57,6 @@ impl VmallocHeader {
 		self.size = size as u32;
 	}
 
-	/// GETTERS
 	fn magic(&self) -> u16 {
 		self.magic
 	}
@@ -80,11 +78,6 @@ impl VmallocHeader {
 	}
 }
 
-/// vmalloc() allocates a memory zone virtually but not physically contiguous.
-/// It returns a pointer to the allocated memory zone.
-///
-/// # Argument
-/// The size of the allocated memory zone is at least the size of the requested memory zone.
 pub unsafe fn vmalloc(mut size: usize) -> Option<*mut u8> {
 	log!(LogLevel::Info, "vmalloc() allocating {} bytes", size);
 	size += VMALLOC_HEADER_SIZE;
@@ -108,7 +101,6 @@ pub unsafe fn vmalloc(mut size: usize) -> Option<*mut u8> {
 		if current_header.is_null() {
 			log!(LogLevel::Warning, "No more memory available");
 			return None;
-			//vbrk(size as isize);
 		}
 		let vheader = current_header.as_mut().unwrap();
 		if vheader.used() == FREE && vheader.size() >= size {
@@ -127,10 +119,6 @@ pub unsafe fn vmalloc(mut size: usize) -> Option<*mut u8> {
 	None
 }
 
-/// kfree() frees a memory zone allocated by vmalloc().
-///
-/// # Argument
-/// Valid pointer to the memory zone to free.
 pub unsafe fn kfree(vmalloc_address: *mut u8) {
 	log!(LogLevel::Info, "kfree() freeing address: {:p}", vmalloc_address);
 	let header = (vmalloc_address as *mut VmallocHeader)
@@ -160,41 +148,29 @@ pub unsafe fn kfree(vmalloc_address: *mut u8) {
 
 	if let Some(next_header) = header.next().as_mut() {
 		if next_header.used() == FREE {
-			// Coalesce with the next block
+		
 			header.set_size(header.size() + next_header.size());
 			header.next = next_header.next();
-
-			// Update the previous pointer of the block after the next block
 			if let Some(next_next_header) = next_header.next().as_mut() {
 				next_next_header.prev = header;
 			}
-
-			// Reset the next header
 			next_header.reset();
 		}
 	}
 
 	if let Some(prev_header) = header.prev().as_mut() {
 		if prev_header.used() == FREE {
-			// Coalesce with the previous block
 			prev_header.set_size(prev_header.size() + header.size());
 			prev_header.next = header.next();
 
-			// Update the previous pointer of the block after the next block
 			if let Some(next_header) = header.next().as_mut() {
 				next_header.prev = prev_header;
 			}
-
-			// Reset the current header
 			header.reset();
 		}
 	}
 }
 
-/// vsize() returns the size of a memory zone allocated by vmalloc().
-///
-/// # Argument
-/// Valid pointer to the memory zone.
 pub unsafe fn vsize(vmalloc_address: *mut u8) -> usize {
 	let header = (vmalloc_address as *mut VmallocHeader)
 		.offset(-1)
@@ -214,11 +190,6 @@ pub unsafe fn vsize(vmalloc_address: *mut u8) -> usize {
 	header.size()
 }
 
-/// vbrk() changes the location of the kernel heap break, which defines the end of
-/// mapped virtual memory.
-///
-/// # Argument
-/// The increment can be positive or negative.
 pub unsafe fn vbrk(increment: isize) {
 	let frame_number: isize;
 
@@ -289,8 +260,6 @@ fn print_vmalloc_info() {
 	}
 }
 
-// Import your custom memory management module here
-
 const MAX_PTRS: usize = 10;
 
 pub fn vmalloc_test() {
@@ -348,7 +317,7 @@ pub fn vmalloc_test() {
 		vbrk(500); // Increment
 		vbrk(-300); // Decrement
 		vbrk(200); // Increment again
-		print_vmalloc_info();  // BIZZARRE A REGARDER LOG
+		print_vmalloc_info();
 
 		log!(LogLevel::Info, "Freeing all blocks\n");
 		for i in 0..ptr_count {
@@ -362,11 +331,6 @@ pub fn vmalloc_test() {
 		let ptr = vmalloc(1024 * 1024).expect("Failed to allocate memory");
 		ptrs[0] = ptr;
 		print_vmalloc_info();
-
-		// log!(LogLevel::Info, "Allocating a 1MB block\n");
-		// let ptr = vmalloc(1024 * 1024).expect("Failed to allocate memory");
-		// ptrs[0] = ptr;
-		// print_vmalloc_info();
 	}
 	log!(LogLevel::Info, "\t\tEnd of vmalloc() and kfree() test\n");
 }

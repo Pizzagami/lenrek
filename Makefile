@@ -1,23 +1,25 @@
 RUSTC := rustup run nightly-2024-06-12 rustc
 CARGO := rustup run nightly-2024-06-12 cargo
 
-arch ?= x86
-KERNEL = target/x86/debug/kernel
-GRUB_CFG = src/arch/x86/grub.cfg
+arch ?= i386-unknown-none
+RELEASE = target/i386-unknown-none/debug/release
+KERNEL = target/i386-unknown-none/release/libkernel.a
+GRUB_CFG = src/arch/i386-unknown-none/grub.cfg
 
 ISO = os-$(arch).iso
 
 all: kernel iso
 
 kernel:
-	cargo build
+	cargo build --release
 	cp $(KERNEL) .
 
 iso: kernel
 	mkdir -pv iso/boot/grub
-	cp kernel iso/boot
+	cp libkernel.a iso/boot
+	nasm -f elf32 src/multiboot/boot.asm -o iso/boot/boot.o
+	ld -m elf_i386 -n -o iso/boot/kernel.bin -T src/arch/$(arch)/linker.ld iso/boot/boot.o iso/boot/libkernel.a
 	cp $(GRUB_CFG) iso/boot/grub
-	grub-file --is-x86-multiboot iso/boot/kernel
 	grub-mkrescue -o $(ISO) iso
 
 install:
@@ -33,7 +35,8 @@ run:
 	LD_PRELOAD=/lib/x86_64-linux-gnu/libpthread.so.0 /usr/bin/qemu-system-i386 -cdrom $(ISO)
 
 clean:
-	rm -rf  target iso kernel os-x86.iso
+	rm -rf  target iso kernel os-$(arch).iso libkernel.a
+	cargo clean
 
 re: clean all
 

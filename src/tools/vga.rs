@@ -143,7 +143,6 @@ pub struct Writer {
 
 pub enum WriteMode {
 	Normal,
-	Top,
 	Serial,
 }
 
@@ -151,7 +150,6 @@ impl Writer {
 	pub fn write_byte(&mut self, byte: u8) {
 		match self.mode {
 			WriteMode::Normal => self.write_byte_normal(byte),
-			WriteMode::Top => self.write_byte_top(byte),
 			WriteMode::Serial => self.write_byte_serial(byte),
 		}
 	}
@@ -169,27 +167,6 @@ impl Writer {
 						color: self.color,
 					},
 					VGA_LAST_LINE,
-					self.column_position,
-				);
-
-				self.column_position += 1;
-			}
-		}
-	}
-
-	fn write_byte_top(&mut self, byte: u8) {
-		if self.column_position >= VGA_COLUMNS {
-			self.new_line_top();
-		}
-		match byte {
-			b'\n' => self.new_line_top(),
-			byte => {
-				self.buffer.write(
-					ScreenChar {
-						ascii_character: byte,
-						color: self.color,
-					},
-					self.row_position,
 					self.column_position,
 				);
 
@@ -241,16 +218,6 @@ impl Writer {
 		for col in 0..VGA_COLUMNS {
 			self.screen[SERIAL_SCREEN].buffer[row * VGA_COLUMNS + col] = b' ';
 		}
-	}
-
-	fn new_line_top(&mut self) {
-		self.column_position = 0;
-		if self.row_position < VGA_ROWS - 1 {
-			self.row_position += 1;
-		} else {
-			self.row_position = 0;
-		}
-		self.clear_row(self.row_position);
 	}
 
 	pub fn write_string(&mut self, s: &str) {
@@ -389,9 +356,6 @@ impl Writer {
 	}
 }
 
-/// Changes the currently displayed screen.
-///
-/// This function switches between different virtual screens.
 pub fn change_display(display: usize) {
 	if WRITER.lock().current_display == display {
 		return;
@@ -417,41 +381,34 @@ pub fn change_color(foreground: bool) {
 	interrupts::enable();
 }
 
-/// Converts a given byte to CP437 encoding.
-///
-/// CP437 is a character encoding commonly used in the VGA text mode
-/// buffer. It is a superset of ASCII, meaning that all ASCII characters
-/// are encoded the same way in CP437 as they are in ASCII. However,
-/// CP437 also contains many additional characters that are not present
-/// in ASCII.
 fn convert_to_cp437(byte: u8) -> u8 {
 	match byte {
-		0x01 => 0x80, // Ç
-		0x02 => 0x81, // ü
-		0x03 => 0x82, // é
-		0x04 => 0x83, // â
-		0x05 => 0x84, // ä
-		0x06 => 0x85, // à
-		0x07 => 0x87, // ç
-		0x08 => 0x88, // ê
-		0x09 => 0x89, // ë
-		0x0b => 0x8a, // è
-		0x0c => 0x8b, // ï
-		0x0d => 0x8c, // î
-		0x0e => 0x8e, // Ä
-		0x0f => 0x90, // É
-		0x10 => 0x93, // ô
-		0x11 => 0x94, // ö
-		0x12 => 0x96, // û
-		0x13 => 0x97, // ù
-		0x14 => 0x99, // Ö
-		0x15 => 0x9a, // Ü
-		0x16 => 0x9c, // £
-		0x17 => 0xe6, // µ
-		0x18 => 0xf8, // °
-		0x19 => 0xfd, // ²
-		0x1a => 0x15, // §
-		_ => byte,    // Other bytes remain unchanged
+		0x01 => 0x80,
+		0x02 => 0x81,
+		0x03 => 0x82,
+		0x04 => 0x83,
+		0x05 => 0x84,
+		0x06 => 0x85,
+		0x07 => 0x87,
+		0x08 => 0x88,
+		0x09 => 0x89,
+		0x0b => 0x8a,
+		0x0c => 0x8b,
+		0x0d => 0x8c,
+		0x0e => 0x8e,
+		0x0f => 0x90,
+		0x10 => 0x93,
+		0x11 => 0x94,
+		0x12 => 0x96,
+		0x13 => 0x97,
+		0x14 => 0x99,
+		0x15 => 0x9a,
+		0x16 => 0x9c,
+		0x17 => 0xe6,
+		0x18 => 0xf8,
+		0x19 => 0xfd,
+		0x1a => 0x15,
+		_ => byte,
 	}
 }
 

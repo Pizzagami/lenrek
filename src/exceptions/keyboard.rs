@@ -1,8 +1,8 @@
 use crate::shell;
 use crate::shell::history::HISTORY;
 use crate::shell::prints::print_welcome_message;
-use crate::tools::video_graphics_array::WRITER;
-use crate::tools::{prompt, video_graphics_array};
+use crate::tools::vga::WRITER;
+use crate::tools::{prompt, vga};
 use core::sync::atomic::{AtomicBool, Ordering};
 
 pub static KEYBOARD_INTERRUPT_RECEIVED: AtomicBool = AtomicBool::new(false);
@@ -37,7 +37,7 @@ pub fn process_keyboard_input() {
 	if serial_screen {
 		WRITER.lock().show_cursor();
 		SERIAL_SCREEN.store(false, Ordering::SeqCst);
-		video_graphics_array::change_display(0);
+		vga::change_display(0);
 	}
 
 	unsafe {
@@ -126,11 +126,11 @@ fn update_modifier_state(scancode: u8) {
 			0x4f => prompt::end(),
 			0x48 => HISTORY.lock().scroll_up(),
 			0x50 => HISTORY.lock().scroll_down(),
-			0x3b => video_graphics_array::change_display(0),
-			0x3c => video_graphics_array::change_display(1),
-			0x3d => video_graphics_array::change_display(2),
-			0x3e => video_graphics_array::change_display(3),
-			0x3f => video_graphics_array::change_display(4),
+			0x3b => vga::change_display(0),
+			0x3c => vga::change_display(1),
+			0x3d => vga::change_display(2),
+			0x3e => vga::change_display(3),
+			0x3f => vga::change_display(4),
 			// 0x40 F6
 			// 0x41 F7
 			// 0x42 F8
@@ -148,8 +148,8 @@ fn update_modifier_state(scancode: u8) {
 				INSERT_PRESSED.store(!insert, Ordering::SeqCst)
 			}
 			0x53 => prompt::delete(),
-			0x57 => video_graphics_array::change_color(FOREGROUND),
-			0x58 => video_graphics_array::change_color(BACKGROUND),
+			0x57 => vga::change_color(FOREGROUND),
+			0x58 => vga::change_color(BACKGROUND),
 			_ => (),
 		}
 	}

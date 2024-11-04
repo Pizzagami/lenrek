@@ -5,16 +5,11 @@ use lazy_static::lazy_static;
 use spin::Mutex;
 
 lazy_static! {
-	/// Mutex-protected global instance of the shell history.
 	pub static ref HISTORY: Mutex<History> = Mutex::new(History::new());
 }
 
 pub type Line = [u8; MAX_LINE_LENGTH];
 
-/// Structure representing the shell command history.
-///
-/// Maintains a buffer of previously entered commands, along with indices for adding and
-/// retrieving commands.
 pub struct History {
 	buffer: [Line; MAX_HISTORY_LINES],
 	last_input: [u8; MAX_LINE_LENGTH],

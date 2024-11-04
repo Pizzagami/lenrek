@@ -18,7 +18,6 @@ pub static mut KMALLOC_BREAK: *mut u8 = core::ptr::null_mut();
 const MAX_ALLOCATION_SIZE: usize = PAGE_SIZE;
 
 #[repr(C, packed)]
-/// Structure of a Kmalloc header
 pub struct KmallocHeader {
 	prev: *mut KmallocHeader,
 	next: *mut KmallocHeader,
@@ -54,7 +53,6 @@ impl KmallocHeader {
 		self.used = 0;
 	}
 
-	/// SETTERS
 	fn set_status(&mut self, status: u16) {
 		self.used = status;
 	}
@@ -63,7 +61,6 @@ impl KmallocHeader {
 		self.size = size as u32;
 	}
 
-	/// GETTERS
 	fn magic(&self) -> u16 {
 		self.magic
 	}
@@ -85,11 +82,6 @@ impl KmallocHeader {
 	}
 }
 
-/// kmalloc() allocates a memory zone virtually but not physically contiguous.
-/// It returns a pointer to the allocated memory zone.
-///
-/// # Argument
-/// The size of the allocated memory zone is at least the size of the requested memory zone.
 pub unsafe fn kmalloc(mut size: usize) -> Option<*mut u8> {
 	log!(LogLevel::Info, "kmalloc() allocating {} bytes", size);
 	size += KMALLOC_HEADER_SIZE;
@@ -147,10 +139,6 @@ pub unsafe fn kmalloc(mut size: usize) -> Option<*mut u8> {
 	None
 }
 
-/// kfree() frees a memory zone allocated by kmalloc().
-///
-/// # Argument
-/// Valid pointer to the memory zone to free.
 pub unsafe fn kfree(kmalloc_address: *mut u8) {
 	log!(
 		LogLevel::Info,
@@ -184,41 +172,31 @@ pub unsafe fn kfree(kmalloc_address: *mut u8) {
 
 	if let Some(next_header) = header.next().as_mut() {
 		if next_header.used() == FREE {
-			// Coalesce with the next block
 			header.set_size(header.size() + next_header.size());
 			header.next = next_header.next();
 
-			// Update the previous pointer of the block after the next block
 			if let Some(next_next_header) = next_header.next().as_mut() {
 				next_next_header.prev = header;
 			}
 
-			// Reset the next header
 			next_header.reset();
 		}
 	}
 
 	if let Some(prev_header) = header.prev().as_mut() {
 		if prev_header.used() == FREE {
-			// Coalesce with the previous block
 			prev_header.set_size(prev_header.size() + header.size());
 			prev_header.next = header.next();
 
-			// Update the previous pointer of the block after the next block
 			if let Some(next_header) = header.next().as_mut() {
 				next_header.prev = prev_header;
 			}
 
-			// Reset the current header
 			header.reset();
 		}
 	}
 }
 
-/// vsize() returns the size of a memory zone allocated by kmalloc().
-///
-/// # Argument
-/// Valid pointer to the memory zone.
 pub unsafe fn ksize(kmalloc_address: *mut u8) -> usize {
 	let header = (kmalloc_address as *mut KmallocHeader)
 		.offset(-1)
@@ -238,11 +216,6 @@ pub unsafe fn ksize(kmalloc_address: *mut u8) -> usize {
 	header.size()
 }
 
-/// kbrk() changes the location of the kernel heap break, which defines the end of
-/// mapped virtual memory.
-///
-/// # Argument
-/// The increment can be positive or negative.
 pub unsafe fn kbrk(increment: isize) {
 	let frame_number: isize;
 
@@ -316,7 +289,6 @@ fn print_kmalloc_info() {
 	}
 }
 
-// Import your custom memory management module here
 
 const MAX_PTRS: usize = 20;
 
@@ -406,12 +378,6 @@ pub fn kmalloc_test() {
         ptrs[10] = ptr;
         print_kmalloc_info();
 
-
-		// log!(LogLevel::Info, "Adjusting KMALLOC_BREAK multiple times\n");
-		// kbrk(500); // Increment
-		// kbrk(-300); // Decrement
-		// kbrk(200); // Increment again
-		// print_kmalloc_info(); // BIZZARRE A REGARDER LOG
 
 		log!(LogLevel::Info, "Freeing all blocks\n");
 		for i in 0..20 {

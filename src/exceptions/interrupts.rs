@@ -9,8 +9,8 @@ use crate::{
 	memory::{
 		page_directory::{PAGE_SIZE, PAGE_TABLES_ADDR},
 		page_table::PageTable,
-		page_table_entry::PageTableFlags,
-		physical_memory_managment::PMM,
+		page_table_entry::FlagTablePages,
+		kmem_managment::PMM,
 	},
 };
 use core::arch::asm;
@@ -23,13 +23,9 @@ pub static TICKS: AtomicU32 = AtomicU32::new(0);
 
 pub const PIC_1_OFFSET: u8 = 32;
 
-/// Global instance of chained PICs.
 pub static PICS: Mutex<ChainedPics> =
 	Mutex::new(unsafe { ChainedPics::new_contiguous(PIC_1_OFFSET) });
 
-/// Enumeration of interrupt indexes.
-///
-/// Represents various interrupt lines corresponding to different hardware and software interrupts.
 #[derive(Debug, Clone, Copy)]
 #[allow(dead_code)]
 #[repr(u8)]
@@ -61,32 +57,16 @@ impl InterruptIndex {
 	}
 }
 
-/// Structure representing an interrupt stack frame.
-///
-/// This structure is pushed onto the stack by the CPU on an interrupt.
-/// It contains the state of the CPU at the time of the interrupt.
-/// The structure is used by the interrupt handler functions to determine
-/// the cause of the interrupt and to handle it appropriately.
 #[derive(Debug)]
 #[repr(C)]
 pub struct InterruptStackFrame {
-	// The following registers are pushed by the CPU automatically
 	pub eip: u32,    // Instruction pointer
 	pub cs: u32,     // Code segment
 	pub eflags: u32, // CPU flags
 
-	// These are only present if the interrupt involved a privilege level change
 	pub esp: u32, // Stack pointer (optional)
 	pub ss: u32,  // Stack segment (optional)
 }
-
-/// Handler functions for various interrupts.
-///
-/// Each of these functions handles a specific type of interrupt, such as
-/// divide by zero, page fault, keyboard input, etc.
-///
-/// The functions print a message and the state of the stack frame at the time
-/// of the interrupt. Not yet implemented.
 
 pub extern "C" fn divide_by_zero(stack_frame: &mut InterruptStackFrame) {
 	handle_panic(&"Divide By Zero", Some(stack_frame));
@@ -172,11 +152,11 @@ pub extern "C" fn page_fault(_stack_frame: &mut InterruptStackFrame, error_code:
 		asm!("mov {}, cr2", out(reg) faulting_address, options(nostack, preserves_flags));
 	}
 
-	let present = error_code & 0x1 != 0; // False if the page was not present
-	let write = error_code & 0x2 != 0; // True if it was a write operation, false for read
-	let user = error_code & 0x4 != 0; // True if the fault occurred in user mode
-	let reserved = error_code & 0x8 != 0; // True if caused by reserved bit violation
-	let instruction_fetch = error_code & 0x10 != 0; // True if caused by an instruction fetch
+	let present = error_code & 0x1 != 0;
+	let write = error_code & 0x2 != 0;
+	let user = error_code & 0x4 != 0;
+	let reserved = error_code & 0x8 != 0;
+	let instruction_fetch = error_code & 0x10 != 0;
 
 	log!(
 		LogLevel::Alert,
@@ -212,23 +192,18 @@ pub extern "C" fn page_fault(_stack_frame: &mut InterruptStackFrame, error_code:
 			log!(LogLevel::Error, "Unknown page fault");
 		}
 	}
-
-	// Additional handling can be added here as required
 }
 
 fn handle_not_present_page_fault(faulting_address: usize) {
-	// Calculate the page directory index and page table index.
 	let pd_index = faulting_address >> 22;
 	let pt_index = (faulting_address >> 12) & 0x3FF;
 
 	println_serial!("Page directory index: {}", pd_index);
 	println_serial!("Page table index: {}", pt_index);
 
-	// Access the page table
 	let page_table_addr = unsafe { PAGE_TABLES_ADDR + (pd_index * PAGE_SIZE) as u32 };
 	let page_table = unsafe { &mut *(page_table_addr as *mut PageTable) };
 
-	// Allocate a new frame for the page
 	println_serial!("Page table address: {:#x}, page_table ", page_table_addr);
 	println_serial!("Page table address: {:#x}, page_table ", page_table_addr);
 	let frame = PMM.lock().allocate_frame();
@@ -236,13 +211,11 @@ fn handle_not_present_page_fault(faulting_address: usize) {
 		Ok(frame) => {
 			println_serial!("Allocated frame: {:#x}", frame);
 
-			// Update the page table entry
 			let page_table_entry = &mut page_table.entries[pt_index];
 			page_table_entry
-				.set_frame_address(frame, PageTableFlags::PRESENT | PageTableFlags::WRITABLE);
+				.set_frame_address(frame, FlagTablePages::PRESENT | FlagTablePages::WRITABLE);
 			println_serial!("Updated page table entry: {:#x}", page_table_entry.value());
 
-			// Optionally, flush the TLB for the updated address here
 			unsafe {
 				let cr3: u32;
 				asm!("mov {}, cr3", out(reg) cr3);
@@ -327,7 +300,6 @@ pub fn syscall_interrupt(_stack_frame: &mut InterruptStackFrame) {
 
 	unsafe {
 		asm!(
-			// Save registers into the struct fields
 			"mov [{}], eax",
 			"mov [{}], ebx",
 			"mov [{}], ecx",
@@ -335,7 +307,7 @@ pub fn syscall_interrupt(_stack_frame: &mut InterruptStackFrame) {
 			"mov [{}], esi",
 			"mov [{}], edi",
 			"mov [{}], ebp",
-			// Pointers to each field of the `registers` struct
+
 			in(reg) &mut registers.eax,
 			in(reg) &mut registers.ebx,
 			in(reg) &mut registers.ecx,
@@ -347,12 +319,10 @@ pub fn syscall_interrupt(_stack_frame: &mut InterruptStackFrame) {
 		);
 	}
 
-	// Call the syscall function with the registers
 	syscall(&mut registers);
 
 	unsafe {
 		asm!(
-			// Restore the register values from the struct fields
 			"mov eax, [{}]",
 			"mov ebx, [{}]",
 			"mov ecx, [{}]",
@@ -360,7 +330,7 @@ pub fn syscall_interrupt(_stack_frame: &mut InterruptStackFrame) {
 			"mov esi, [{}]",
 			"mov edi, [{}]",
 			"mov ebp, [{}]",
-			// Pointers to each field of the `registers` struct
+
 			in(reg) &registers.eax,
 			in(reg) &registers.ebx,
 			in(reg) &registers.ecx,
@@ -373,9 +343,6 @@ pub fn syscall_interrupt(_stack_frame: &mut InterruptStackFrame) {
 	}
 }
 
-/// Initializes the interrupt handlers.
-///
-/// This function sets up the PICs and enables interrupts in the system.
 pub fn init() {
 	unsafe {
 		PICS.lock().initialize();
@@ -390,18 +357,12 @@ pub fn init() {
 	log!(LogLevel::Info, "Interrupts successfully enabled");
 }
 
-/// Enables interrupts on the CPU.
-///
-/// This function enables interrupts on the CPU by setting the interrupt flag in the CPU's flags register.
 pub fn enable() {
 	unsafe {
 		asm!("sti", options(preserves_flags, nostack));
 	}
 }
 
-/// Disables interrupts on the CPU.
-///
-/// This function disables interrupts on the CPU by clearing the interrupt flag in the CPU's flags register.
 pub fn disable() {
 	unsafe {
 		asm!("cli", options(preserves_flags, nostack));

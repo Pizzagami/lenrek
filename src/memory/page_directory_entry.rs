@@ -1,7 +1,7 @@
 use crate::memory::page_table::PageTable;
 use bitflags::bitflags;
 
-use super::physical_memory_managment::HIGH_KERNEL_OFFSET;
+use super::kmem_managment::HK_OFST;
 
 bitflags! {
 	pub struct PageDirectoryFlags: u32 {
@@ -26,12 +26,12 @@ pub struct PageDirectoryEntry {
 impl PageDirectoryEntry {
 	// Sets up a PageTable for this directory entry
 	pub fn set(&mut self, page_table: u32, flags: PageDirectoryFlags) {
-		self.value = (page_table - HIGH_KERNEL_OFFSET) | flags.bits();
+		self.value = (page_table - HK_OFST) | flags.bits();
 	}
 
 	// Get the page table for this directory entry
 	pub fn get_page_table(&self) -> &mut PageTable {
-		let table_address = (self.value & PageDirectoryFlags::PAGE_TABLE.bits()) + HIGH_KERNEL_OFFSET;
+		let table_address = (self.value & PageDirectoryFlags::PAGE_TABLE.bits()) + HK_OFST;
 		unsafe { &mut *(table_address as *mut PageTable) }
 	}
 }

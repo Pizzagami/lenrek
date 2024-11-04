@@ -1,6 +1,6 @@
 use crate::debug::DEBUG;
 use crate::exceptions::interrupts;
-use crate::tools::video_graphics_array::{WriteMode, WRITER};
+use crate::tools::vga::{WriteMode, WRITER};
 use core::fmt;
 
 #[macro_export]
@@ -12,11 +12,6 @@ macro_rules! print {
 macro_rules! println {
 	() => (print!("\n"));
 	($($arg:tt)*) => (print!("{}\n", format_args!($($arg)*)));
-}
-
-#[macro_export]
-macro_rules! print_top {
-	($($arg:tt)*) => ($crate::macros::print_top(format_args!($($arg)*)));
 }
 
 #[macro_export]
@@ -130,16 +125,6 @@ pub fn print(args: fmt::Arguments) {
 	interrupts::disable();
 	let mut writer = WRITER.lock();
 	writer.set_mode(WriteMode::Normal);
-	writer.write_fmt(args).unwrap();
-	interrupts::enable();
-}
-
-
-pub fn print_top(args: fmt::Arguments) {
-	use core::fmt::Write;
-	interrupts::disable();
-	let mut writer = WRITER.lock();
-	writer.set_mode(WriteMode::Top);
 	writer.write_fmt(args).unwrap();
 	interrupts::enable();
 }

@@ -10,5 +10,6 @@
     "disable-redzone": true,
     "features": "-mmx,-sse,+soft-float",
     "linker": "rust-lld",
-    "linker-flavor": "ld.lld"
+    "linker-flavor": "ld.lld",
+    "linker-is-gnu": true
 }

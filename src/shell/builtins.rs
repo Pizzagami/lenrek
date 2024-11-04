@@ -6,7 +6,7 @@ use crate::tools::debug::LogLevel;
 use crate::tools::io::{outb, outw};
 use crate::tools::librs::hlt;
 use crate::tools::librs::{get_rtc_date, get_rtc_time};
-use crate::tools::video_graphics_array::WRITER;
+use crate::tools::vga::WRITER;
 use core::sync::atomic::Ordering;
 
 pub const MAX_LINE_LENGTH: usize = 76;
@@ -89,9 +89,6 @@ fn cmd_mode() {
 	describe_cr0(cr0);
 }
 
-/// Prints the value of CR0.
-///
-/// Prints the value of CR0 and the meaning of each flag.
 fn describe_cr0(cr0: usize) {
 	log!(LogLevel::Info, "CR0 Register: 0b{:032b}", cr0);
 	println!("CR0 Register: 0b{:032b}", cr0);
@@ -118,9 +115,6 @@ fn describe_cr0(cr0: usize) {
 	}
 }
 
-/// Prints CPU information.
-///
-/// Prints the CPU vendor and brand information.
 fn cpu_info() {
 	let mut cpu_vendor = [0u8; 12];
 	let mut cpu_brand = [0u8; 48];
@@ -129,13 +123,11 @@ fn cpu_info() {
 	let mut ecx: usize = 0;
 	let mut edx: usize = 0;
 
-	// Get CPU Vendor
 	get_cpuid(0, &mut eax, &mut ebx, &mut ecx, &mut edx);
 	cpu_vendor[0..4].copy_from_slice(&ebx.to_ne_bytes());
 	cpu_vendor[4..8].copy_from_slice(&edx.to_ne_bytes());
 	cpu_vendor[8..12].copy_from_slice(&ecx.to_ne_bytes());
 
-	// Get CPU Brand
 	for i in 0x80000002..=0x80000004 {
 		get_cpuid(i, &mut eax, &mut ebx, &mut ecx, &mut edx);
 		let offset = (i - 0x80000002) * 16;
@@ -152,9 +144,6 @@ fn cpu_info() {
 	println!("CPU Brand: {}", cpu_brand_str);
 }
 
-/// Gets CPU information using the CPUID instruction.
-///
-/// This function uses the CPUID instruction to get information about the CPU.
 fn get_cpuid(info_type: usize, eax: &mut usize, ebx: &mut usize, ecx: &mut usize, edx: &mut usize) {
 	unsafe {
 		core::arch::asm!(
@@ -169,9 +158,6 @@ fn get_cpuid(info_type: usize, eax: &mut usize, ebx: &mut usize, ecx: &mut usize
 	}
 }
 
-/// Prints the system uptime.
-///
-/// This function prints the system uptime in the format `hh:mm:ss`.
 fn show_uptime() {
 	let uptime_seconds = TICKS.load(Ordering::SeqCst) / 18;
 
@@ -185,7 +171,6 @@ fn show_uptime() {
 	);
 }
 
-// Function to manually trigger a syscall for testing purposes
 pub fn trigger_syscall(syscall_number: u32, arg1: u32, arg2: u32, arg3: u32) {
 	use crate::exceptions::syscalls::GeneralRegs;
 	let mut regs = GeneralRegs {
@@ -201,10 +186,7 @@ pub fn trigger_syscall(syscall_number: u32, arg1: u32, arg2: u32, arg3: u32) {
 	crate::exceptions::syscalls::syscall(&mut regs);
 }
 
-// Example shell command to trigger a specific syscall
-// Example shell command to trigger a specific syscall
 fn test_syscall(line: &str) {
-	// Splitting the line by whitespace and extracting arguments
 	let mut parts = [""; 5]; // syscall name, syscall number, arg1, arg2, arg3
 	let mut part_index = 0;
 
@@ -229,10 +211,6 @@ fn test_syscall(line: &str) {
 	trigger_syscall(syscall_number, arg1, arg2, arg3);
 }
 
-/// Processes a line of input as a shell command.
-///
-/// This function takes a raw input line, trims it, and executes the corresponding shell command
-/// if it matches a known command.
 pub fn readline(raw_line: &str) {
 	let line = raw_line.trim();
 	if line.is_empty() {
@@ -257,10 +235,6 @@ pub fn readline(raw_line: &str) {
 	}
 }
 
-/// Handles commands that require additional parsing.
-///
-/// This function is called for commands that require additional parsing or are not part of the
-/// standard command set, like `echo` and `stack`.
 fn handle_special_commands(line: &str) {
 	if line.starts_with("echo") {
 		echo(line);

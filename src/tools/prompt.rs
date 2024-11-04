@@ -1,5 +1,5 @@
 use crate::shell::builtins::readline;
-use crate::tools::video_graphics_array::{VGA_COLUMNS, WRITER};
+use crate::tools::vga::{VGA_COLUMNS, WRITER};
 use lazy_static::lazy_static;
 use spin::Mutex;
 
@@ -7,19 +7,12 @@ pub static PROMPT_STRING: &str = "$> ";
 pub static PROMPT_LENGTH: usize = PROMPT_STRING.len();
 
 lazy_static! {
-	/// Static Mutex-protected global instance of the prompt.
-	///
-	/// This instance represents the current state of the command-line prompt
 	pub static ref PROMPT: Mutex<Prompt> = Mutex::new(Prompt {
 		buffer: [0; VGA_COLUMNS],
 		length: 0,
 	});
 }
 
-/// Represents the command-line prompt.
-///
-/// This struct maintains the state of the prompt, including the buffer
-/// for the current input line and the length of the input.
 pub struct Prompt {
 	buffer: [u8; VGA_COLUMNS],
 	pub length: usize,

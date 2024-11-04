@@ -1,9 +1,9 @@
-use crate::memory::physical_memory_managment::PMM;
+use crate::memory::kmem_managment::PMM;
 use bitflags::bitflags;
 use crate::print_serial;
 
 bitflags! {
-	pub struct PageTableFlags: u32 {
+	pub struct FlagTablePages: u32 {
 		const PRESENT = 0b1;
 		const WRITABLE = 0b10;
 		const USER = 0b100;
@@ -29,12 +29,12 @@ impl PageTableEntry {
 		PageTableEntry { value: 0 }
 	}
 
-	pub fn set_frame_address(&mut self, frame_address: u32, flags: PageTableFlags) {
+	pub fn set_frame_address(&mut self, frame_address: u32, flags: FlagTablePages) {
 		self.value = frame_address | flags.bits();
 	}
 
-	pub fn set_flags(&mut self, flags: PageTableFlags) {
-		self.value = (self.value & PageTableFlags::FRAME.bits()) | flags.bits();
+	pub fn set_flags(&mut self, flags: FlagTablePages) {
+		self.value = (self.value & FlagTablePages::FRAME.bits()) | flags.bits();
 	}
 
 	pub fn alloc_new(&mut self) {
@@ -47,13 +47,13 @@ impl PageTableEntry {
 		print_serial!("Frame allocated at {:?}\n", frame.unwrap());
 		self.set_frame_address(
 			frame.unwrap(),
-			PageTableFlags::PRESENT | PageTableFlags::WRITABLE,
+			FlagTablePages::PRESENT | FlagTablePages::WRITABLE,
 		);
 		print_serial!("Frame allocated at {:?}\n", frame.unwrap());
 	}
 
 	pub fn frame(&self) -> u32 {
-		self.value & PageTableFlags::FRAME.bits()
+		self.value & FlagTablePages::FRAME.bits()
 	}
 
 	pub fn value(&self) -> u32 {

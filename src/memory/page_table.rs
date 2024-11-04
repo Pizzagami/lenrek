@@ -1,6 +1,6 @@
 use crate::memory::{
 	page_directory::{ENTRY_COUNT, PAGE_SIZE},
-	page_table_entry::{PageTableEntry, PageTableFlags},
+	page_table_entry::{PageTableEntry, FlagTablePages},
 };
 
 #[derive(Clone, Copy, Debug)]
@@ -10,8 +10,7 @@ pub struct PageTable {
 }
 
 impl PageTable {
-	/// Creates a new, empty page table with default entries.
-	pub fn new(&mut self, flags: PageTableFlags) {
+	pub fn new(&mut self, flags: FlagTablePages) {
 		self.entries = [PageTableEntry::new(); ENTRY_COUNT];
 		for entry in self.entries.iter_mut() {
 			entry.set_flags(flags);
@@ -23,8 +22,7 @@ impl PageTable {
 		&mut self.entries[index as usize]
 	}
 
-	/// Maps the page table to the given physical address.
-	pub fn kernel_mapping(&mut self, mut physical_address: u32, flags: PageTableFlags) {
+	pub fn kernel_mapping(&mut self, mut physical_address: u32, flags: FlagTablePages) {
 		for page_table_entry in self.entries.iter_mut() {
 			page_table_entry.set_frame_address(physical_address, flags);
 			physical_address += PAGE_SIZE as u32;

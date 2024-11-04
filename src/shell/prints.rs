@@ -1,24 +1,16 @@
-//! # Shell Built-in Command Print Functions
-//!
-//! This module contains functions to print information to the VGA text buffer in response to
-//! shell commands. It includes functions for handling unknown commands, printing a welcome message,
-//! displaying a stack trace, and providing a help menu with available commands.
-
 use crate::exceptions::interrupts;
 use crate::shell::builtins::clear;
 use crate::gdt::GDT;
-use crate::idt::_IDT;
+use crate::idt::IDT;
 use crate::tools::librs::hexdump;
 use crate::tools::prompt;
-use crate::tools::video_graphics_array::WRITER;
+use crate::tools::vga::WRITER;
 
-/// Prints an unknown command error message.
 pub fn print_unknown_command(line: &str) {
 	let len = line.len().min(50);
 	println!("Unknown command: {}", line[0..len].trim());
 }
 
-/// Prints the welcome message.
 pub fn print_welcome_message() {
 	clear();
 	println!("                                     :---------:    .---------:---------- ");
@@ -39,8 +31,8 @@ pub fn print_welcome_message() {
 	println!("                 ....................=@@@@@@@@@@    +@@@@@@@@@#:#@@@@@@@@.");
 	println!("                                     -@@@@@@@@@@     .................... ");
 	println!("                                     -@@@@@@@@@@     by                   ");
-	println!("                                     -@@@@@@@@@@          Alix Muller     ");
-	println!("                                     -@@@@@@@@@@       Lorenzo Simanic    ");
+	println!("                                     -@@@@@@@@@@       selgrabl           ");
+	println!("                                     -@@@@@@@@@@       braimbau           ");
 	println!("                                     .----------                          ");
 	println!("");
 	println!("                       Welcome to KFS! Type 'help' for a list of commands!");
@@ -53,10 +45,6 @@ pub enum PrintStackMode {
 	Serial,
 }
 
-/// Prints the current stack trace.
-///
-/// Extracts and displays a hexadecimal dump of the current stack.
-/// Useful for debugging purposes.
 pub fn print_stack(line: &str, mode: PrintStackMode) {
 	let trimmed_line = match mode {
 		PrintStackMode::Vga => line["stack".len()..].trim(),
@@ -75,17 +63,13 @@ pub fn print_stack(line: &str, mode: PrintStackMode) {
 			}
 			esp
 		}
-		Some("gdt") => {
-			let gdt_address: usize;
-			{
-				gdt_address = &*GDT.lock().gdt as *const _ as usize;
-			}
-			gdt_address
+		Some("gdt") => unsafe {
+			GDT as usize
 		}
 		Some("idt") => {
 			let offset: usize;
-			{
-				offset = &_IDT as *const _ as usize;
+			unsafe {
+				offset = IDT as usize;
 			}
 			offset
 		}
@@ -113,7 +97,6 @@ pub fn print_stack(line: &str, mode: PrintStackMode) {
 	hexdump(address, num_bytes, mode);
 }
 
-/// Prints a formatted line in the help menu.
 pub fn print_help_line(command: &str, description: &str) {
 	print!("  {:21}", command);
 	printraw("Z");
@@ -125,7 +108,7 @@ pub fn print_help_line(command: &str, description: &str) {
 	}
 }
 
-/// Displays the help menu.
+
 pub fn help() {
 	clear();
 	printraw("immmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm[Z");
@@ -159,7 +142,6 @@ pub fn help() {
 	println!("");
 }
 
-/// Prints raw strings to the VGA buffer.
 pub fn printraw(string: &str) {
 	interrupts::disable();
 	WRITER.lock().write_string_raw(string);

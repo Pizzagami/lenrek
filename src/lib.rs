@@ -9,66 +9,45 @@ mod gdt;
 mod shell;
 mod idt;
 mod memory;
-mod asm;
 mod exceptions;
+mod multiboot;
 
 use crate::shell::prints;
 use crate::tools::debug;
+use crate::tools::librs::hlt;
 use core::panic::PanicInfo;
 use exceptions::{interrupts, keyboard::process_keyboard_input, panic::handle_panic};
-
-#[allow(dead_code)]
-pub struct MultibootHeader {
-    magic: u32,
-    arch: u32,
-    magic2: u32
-}
+use crate::memory::kmem_managment::HK_OFST;
 
 #[no_mangle]
-#[link_section = ".multiboot"]
-pub static MULTIBOOT: MultibootHeader = MultibootHeader {
-    magic: 0x1BADB002,
-    arch: 0x0,
-    magic2: -(0x1BADB002 as i32) as u32
-};
-
-#[naked]
-#[no_mangle]
-pub extern "C" fn _start() -> ! {
-    unsafe {
-        core::arch::asm!("
-            cli
-            mov esp, 0xf00000
-            call main
-            cli
-            hlt
-        ", options(noreturn));
-    }
+pub extern "C" fn _start(multiboot_magic: u32, multiboot_addr: u32) -> ! {
+    init(multiboot_magic, multiboot_addr);
+    main();
 }
 
 #[no_mangle]
 pub extern "C" fn main() -> ! {
+    loop {
+        process_keyboard_input();
+        hlt();
+    }
 
+}
+
+fn init(multiboot_magic: u32, multiboot_addr: u32) {
+    multiboot::validate_multiboot(multiboot_magic, multiboot_addr);
     interrupts::disable();
     debug::init_serial_port();
     gdt::init();
     idt::init();
     interrupts::init();
-
-    cli!();
-    memory::physical_memory_managment::physical_memory_manager_init();
+    multiboot::read_multiboot_info(multiboot_addr + HK_OFST);
+    memory::kmem_managment::kmem_manager_init();
     unsafe { memory::page_directory::init_page_directory() };
     memory::page_directory::enable_paging();
     prints::print_welcome_message();
 	memory::vmalloc::vmalloc_test();
 	memory::kmalloc::kmalloc_test();
-
-    sti!();
-    loop {
-        process_keyboard_input();
-        hlt!();
-    }
-
 }
 
 #[panic_handler]

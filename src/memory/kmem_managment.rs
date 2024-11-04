@@ -3,42 +3,25 @@ use crate::print_serial;
 use super::page_directory::{PAGE_DIRECTORY_ADDR, PAGE_TABLES_ADDR, PAGE_TABLE_SIZE};
 use lazy_static::lazy_static;
 use spin::Mutex;
+use crate::multiboot::MltbtMME;
+use crate::multiboot::MltbtMMT;
 
 const MAX_REGIONS: usize = 10;
 const PMMNGR_BLOCK_SIZE: u32 = 4096; // 4KiB
 const PMMNGR_BLOCKS_PER_INDEX: u32 = 32;
 const USED_BLOCK: u32 = 0xFFFFFFFF;
 
-pub const HIGH_KERNEL_OFFSET: u32 = 0xC0000000;
+pub const HK_OFST: u32 = 0xC0000000;
 pub const KERNEL_HEAP_START: u32 = 0xD0000000;
 pub const KERNEL_HEAP_END: u32 = 0xEFFFFFFF;
 
-const USER_SPACE_START: u32 = 0;
-const USER_SPACE_END: u32 = HIGH_KERNEL_OFFSET - 1;
-const KERNEL_SPACE_START: u32 = HIGH_KERNEL_OFFSET;
-const KERNEL_SPACE_END: u32 = 0xFFFFFFFF;
+const PS_START: u32 = 0;
+const PS_E: u32 = HK_OFST - 1;
+const KS_S: u32 = HK_OFST;
+const KS_END: u32 = 0xFFFFFFFF;
 
 pub static mut PMM_ADDRESS: u32 = 0;
 pub static mut PAGE_TABLE_END: u32 = 0;
-
-#[derive(Debug)]
-#[repr(C)]
-pub struct MultibootMemoryMapEntry {
-	pub address: u64,
-	pub len: u64,
-	pub entry_type: u32,
-	zero: u32,
-}
-
-#[derive(Debug)]
-#[repr(C)]
-pub struct MultibootMemoryMapTag {
-	tag_type: u32,
-	pub size: u32,
-	pub entry_size: u32,
-	pub entry_version: u32,
-	pub entries: [MultibootMemoryMapEntry; 1],
-}
 
 pub static mut MEMORY_MAP: u32 = 0;
 #[derive(Clone, Copy, Debug)]
@@ -47,24 +30,22 @@ pub struct MemoryRegion {
 	pub size: usize,
 }
 
-/// Prevent the compiler from implementing Send and Sync on the PhysicalMemoryManager. For thread safety.
-unsafe impl Send for PhysicalMemoryManager {}
-unsafe impl Sync for PhysicalMemoryManager {}
-/// Physical Memory Manager
+unsafe impl Send for KmemManager {}
+unsafe impl Sync for KmemManager {}
 #[derive(Debug)]
-pub struct PhysicalMemoryManager {
+pub struct KmemManager {
 	memory_map: &'static mut [u32],
 	used_blocks: u32,
 	max_blocks: u32,
 	memory_map_size: u32,
 	pub usable_regions: [MemoryRegion; MAX_REGIONS],
 	pub memory_size: u32,
-	pub memory_map_tag: Option<&'static MultibootMemoryMapTag>,
-	pub memory_map_entries: Option<&'static [MultibootMemoryMapEntry]>,
+	pub memory_map_tag: Option<&'static MltbtMMT>,
+	pub memory_map_entries: Option<&'static [MltbtMME]>,
 }
 
 lazy_static! {
-	pub static ref PMM: Mutex<PhysicalMemoryManager> = Mutex::new(PhysicalMemoryManager {
+	pub static ref PMM: Mutex<KmemManager> = Mutex::new(KmemManager {
 		memory_map: unsafe { core::slice::from_raw_parts_mut(0 as *mut u32, 0) },
 		used_blocks: 0,
 		max_blocks: 0,
@@ -84,7 +65,7 @@ extern "C" {
 	static mut _kernel_end: u8;
 }
 
-impl PhysicalMemoryManager {
+impl KmemManager {
 	pub fn init(&mut self) {
 		let max_blocks = self.memory_size / PMMNGR_BLOCK_SIZE;
 		let memory_map_size = max_blocks / PMMNGR_BLOCKS_PER_INDEX;
@@ -93,20 +74,20 @@ impl PhysicalMemoryManager {
 		unsafe {
 			MEMORY_MAP = addr_of!(_kernel_end) as *const u8 as u32;
 			PMM_ADDRESS = align_up(MEMORY_MAP + memory_map_size);
-			PAGE_DIRECTORY_ADDR = align_up(PMM_ADDRESS + size_of::<PhysicalMemoryManager>() as u32);
+			PAGE_DIRECTORY_ADDR = align_up(PMM_ADDRESS + size_of::<KmemManager>() as u32);
 			PAGE_TABLES_ADDR = PAGE_DIRECTORY_ADDR + 0x1000;
 			PAGE_TABLE_END = PAGE_TABLES_ADDR + PAGE_TABLE_SIZE as u32 + 0x1000;	
 			
-			println_serial!("User space start:         {:#x}", USER_SPACE_START);
-			println_serial!("User space end:           {:#x}", USER_SPACE_END);
-			println_serial!("Kernel space start:       {:#x}", KERNEL_SPACE_START);
+			println_serial!("User space start:         {:#x}", PS_START);
+			println_serial!("User space end:           {:#x}", PS_E);
+			println_serial!("Kernel space start:       {:#x}", KS_S);
 			println_serial!("Memory map address:       {:#x}", MEMORY_MAP);
 			println_serial!("PMM address:              {:#x}", PMM_ADDRESS);
 			println_serial!("Page directory address:   {:#x}", PAGE_DIRECTORY_ADDR);
 			println_serial!("Page tables address:      {:#x}", PAGE_TABLES_ADDR);
 			println_serial!("Kernel heap start:        {:#x}", KERNEL_HEAP_START as u32);
 			println_serial!("Kernel heap end:          {:#x}", KERNEL_HEAP_END as u32);
-			println_serial!("Kernel space end:         {:#x}", KERNEL_SPACE_END);
+			println_serial!("Kernel space end:         {:#x}", KS_END);
 		}
 		
 		self.memory_map = unsafe {
@@ -141,14 +122,12 @@ impl PhysicalMemoryManager {
 			}
 			self.set_region_as_available(region.start_address as u32, region.size as u32);
 		}
-		// Set the kernel space as used
-		self.set_region_as_unavailable(KERNEL_SPACE_START - HIGH_KERNEL_OFFSET, unsafe {
-			PAGE_TABLE_END as u32 - KERNEL_SPACE_START - 1
+		self.set_region_as_unavailable(KS_S - HK_OFST, unsafe {
+			PAGE_TABLE_END as u32 - KS_S - 1
 		});
 		println_serial!("PMM memory size: {:#x}", self.memory_size);
 	}
 	
-	/// Sets a bit in the memory map.
 	fn mmap_set(&mut self, bit: u32) {
 		let index = bit / 32;
 		let offset = bit % 32;
@@ -156,7 +135,6 @@ impl PhysicalMemoryManager {
 		self.used_blocks += 1;
 	}
 
-	/// Unsets a bit in the memory map.
 	fn mmap_unset(&mut self, bit: u32) {
 		let index = bit / 32;
 		let offset = bit % 32;
@@ -164,7 +142,6 @@ impl PhysicalMemoryManager {
 		self.used_blocks -= 1;
 	}
 
-	/// Sets a region of memory as available. This is used to mark the usable regions of memory
 	fn set_region_as_available(&mut self, region_address: u32, region_size: u32) {
 		let start_block = region_address / PMMNGR_BLOCK_SIZE;
 		let mut blocks = region_size / PMMNGR_BLOCK_SIZE;
@@ -178,7 +155,6 @@ impl PhysicalMemoryManager {
 		}
 	}
 
-	/// Sets a region of memory as used. Needs address u32 and size in bytes.
 	fn set_region_as_unavailable(&mut self, region_address: u32, region_size: u32) {
 		let start_block = region_address / PMMNGR_BLOCK_SIZE;
 		let mut blocks = region_size / PMMNGR_BLOCK_SIZE;
@@ -232,7 +208,7 @@ impl PhysicalMemoryManager {
 	}
 
 	fn process_memory_map(&mut self) {
-		let memory_map_entries: &[MultibootMemoryMapEntry] = self.memory_map_entries.unwrap();
+		let memory_map_entries: &[MltbtMME] = self.memory_map_entries.unwrap();
 
 		let mut i = 0;
 		println_serial!("      Memory map entry: ");
@@ -289,7 +265,6 @@ impl PhysicalMemoryManager {
 				}
 			}
 
-			// Printing each block's address and its bit pattern directly
 			print_serial!("0x{:08x}: ", index * 32 * PMMNGR_BLOCK_SIZE as usize);
 			for bit in bits.iter() {
 				print_serial!("{}", bit);
@@ -299,13 +274,11 @@ impl PhysicalMemoryManager {
 	}
 }
 
-pub fn physical_memory_manager_init() {
+pub fn kmem_manager_init() {
 	PMM.lock().process_memory_map();
 	PMM.lock().init();
-	//pmm.print_memory_map();
 }
 
-/// Align an address to the nearest page boundary.
 pub fn align_up(addr: u32) -> u32 {
 	(addr + 0xfff) & !0xfff
 }
