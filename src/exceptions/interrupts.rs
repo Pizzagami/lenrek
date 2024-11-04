@@ -198,23 +198,23 @@ fn handle_not_present_page_fault(faulting_address: usize) {
 	let pd_index = faulting_address >> 22;
 	let pt_index = (faulting_address >> 12) & 0x3FF;
 
-	println_serial!("Page directory index: {}", pd_index);
-	println_serial!("Page table index: {}", pt_index);
+	println_srl!("Page directory index: {}", pd_index);
+	println_srl!("Page table index: {}", pt_index);
 
 	let page_table_addr = unsafe { PAGE_TABLES_ADDR + (pd_index * PAGE_SIZE) as u32 };
 	let page_table = unsafe { &mut *(page_table_addr as *mut PageTable) };
 
-	println_serial!("Page table address: {:#x}, page_table ", page_table_addr);
-	println_serial!("Page table address: {:#x}, page_table ", page_table_addr);
+	println_srl!("Page table address: {:#x}, page_table ", page_table_addr);
+	println_srl!("Page table address: {:#x}, page_table ", page_table_addr);
 	let frame = PMM.lock().allocate_frame();
 	match frame {
 		Ok(frame) => {
-			println_serial!("Allocated frame: {:#x}", frame);
+			println_srl!("Allocated frame: {:#x}", frame);
 
 			let page_table_entry = &mut page_table.entries[pt_index];
 			page_table_entry
 				.set_frame_address(frame, FlagTablePages::PRESENT | FlagTablePages::WRITABLE);
-			println_serial!("Updated page table entry: {:#x}", page_table_entry.value());
+			println_srl!("Updated page table entry: {:#x}", page_table_entry.value());
 
 			unsafe {
 				let cr3: u32;

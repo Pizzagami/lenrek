@@ -1,6 +1,6 @@
 use crate::memory::kmem_managment::PMM;
 use bitflags::bitflags;
-use crate::print_serial;
+use crate::print_srl;
 
 bitflags! {
 	pub struct FlagTablePages: u32 {
@@ -38,18 +38,18 @@ impl PageTableEntry {
 	}
 
 	pub fn alloc_new(&mut self) {
-		print_serial!("Allocating new frame for page table entry...");
+		print_srl!("Allocating new frame for page table entry...");
 		let frame = PMM
 			.lock()
 			.allocate_frame()
 			.map_err(|_| "Failed to allocate frame for page table entry");
 
-		print_serial!("Frame allocated at {:?}\n", frame.unwrap());
+		print_srl!("Frame allocated at {:?}\n", frame.unwrap());
 		self.set_frame_address(
 			frame.unwrap(),
 			FlagTablePages::PRESENT | FlagTablePages::WRITABLE,
 		);
-		print_serial!("Frame allocated at {:?}\n", frame.unwrap());
+		print_srl!("Frame allocated at {:?}\n", frame.unwrap());
 	}
 
 	pub fn frame(&self) -> u32 {

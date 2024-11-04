@@ -1,8 +1,8 @@
-use crate::shell::prints::PrintStackMode;
+use crate::shell::prints::PrintSM;
 use crate::shell::{builtins::MAX_LINE_LENGTH, history::Line};
 use crate::tools::io::{inb, outb};
 use core::arch::asm;
-use crate::print_serial;
+use crate::print_srl;
 
 const CMOS_ADDRESS: u16 = 0x70;
 const CMOS_DATA: u16 = 0x71;
@@ -58,7 +58,7 @@ pub fn hlt() {
 	}
 }
 
-pub fn hexdump(mut address: usize, limit: usize, mode: PrintStackMode) {
+pub fn hexdump(mut address: usize, limit: usize, mode: PrintSM) {
 	if limit == 0 {
 		return;
 	}
@@ -70,26 +70,26 @@ pub fn hexdump(mut address: usize, limit: usize, mode: PrintStackMode) {
 			if i != 0 {
 				print_hex_line(address - 16, 16, mode);
 				match mode {
-					PrintStackMode::Vga => println!(""),
-					PrintStackMode::Serial => println_serial!(""),
+					PrintSM::Vga => println!(""),
+					PrintSM::Srl => println_srl!(""),
 				}
 			}
 			match mode {
-				PrintStackMode::Vga => print!("{:08x} ", address),
-				PrintStackMode::Serial => print_serial!("{:08x} ", address),
+				PrintSM::Vga => print!("{:08x} ", address),
+				PrintSM::Srl => print_srl!("{:08x} ", address),
 			}
 		}
 
 		if i % 8 == 0 {
 			match mode {
-				PrintStackMode::Vga => print!(" "),
-				PrintStackMode::Serial => print_serial!(" "),
+				PrintSM::Vga => print!(" "),
+				PrintSM::Srl => print_srl!(" "),
 			}
 		}
 
 		match mode {
-			PrintStackMode::Vga => print!("{:02x} ", byte),
-			PrintStackMode::Serial => print_serial!("{:02x} ", byte),
+			PrintSM::Vga => print!("{:02x} ", byte),
+			PrintSM::Srl => print_srl!("{:02x} ", byte),
 		}
 		address += 1;
 	}
@@ -99,14 +99,14 @@ pub fn hexdump(mut address: usize, limit: usize, mode: PrintStackMode) {
 		let padding = 16 - remaining;
 		for _ in 0..padding {
 			match mode {
-				PrintStackMode::Vga => print!("   "),
-				PrintStackMode::Serial => print_serial!("   "),
+				PrintSM::Vga => print!("   "),
+				PrintSM::Srl => print_srl!("   "),
 			}
 		}
 		if padding > 7 {
 			match mode {
-				PrintStackMode::Vga => print!(" "),
-				PrintStackMode::Serial => print_serial!(" "),
+				PrintSM::Vga => print!(" "),
+				PrintSM::Srl => print_srl!(" "),
 			}
 		}
 		print_hex_line(address - remaining, remaining, mode);
@@ -115,17 +115,17 @@ pub fn hexdump(mut address: usize, limit: usize, mode: PrintStackMode) {
 	}
 
 	match mode {
-		PrintStackMode::Vga => println!(""),
-		PrintStackMode::Serial => println_serial!(""),
+		PrintSM::Vga => println!(""),
+		PrintSM::Srl => println_srl!(""),
 	}
 }
 
-fn print_hex_line(address: usize, count: usize, mode: PrintStackMode) {
+fn print_hex_line(address: usize, count: usize, mode: PrintSM) {
 	let bytes = unsafe { core::slice::from_raw_parts(address as *const u8, count) };
 
 	match mode {
-		PrintStackMode::Vga => print!(" "),
-		PrintStackMode::Serial => print_serial!(" "),
+		PrintSM::Vga => print!(" "),
+		PrintSM::Srl => print_srl!(" "),
 	}
 
 	for i in 0..count {
@@ -135,8 +135,8 @@ fn print_hex_line(address: usize, count: usize, mode: PrintStackMode) {
 			'.'
 		};
 		match mode {
-			PrintStackMode::Vga => print!("{}", ch),
-			PrintStackMode::Serial => print_serial!("{}", ch),
+			PrintSM::Vga => print!("{}", ch),
+			PrintSM::Srl => print_srl!("{}", ch),
 		}
 	}
 }

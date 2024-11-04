@@ -21,7 +21,7 @@ lazy_static! {
 	pub static ref WRITER: Mutex<Writer> = Mutex::new(Writer {
 		column_position: 0,
 		row_position: 0,
-		color: Color::new(ColorCode::Green, ColorCode::Black),
+		color: Color::new(ColorCode::Red, ColorCode::Yellow),
 		buffer: unsafe { &mut *(VGA_BUFFER_ADDRESS as *mut VgaBuffer) },
 		screen: [
 			ScreenState {
@@ -143,14 +143,14 @@ pub struct Writer {
 
 pub enum WriteMode {
 	Normal,
-	Serial,
+	Srl,
 }
 
 impl Writer {
 	pub fn write_byte(&mut self, byte: u8) {
 		match self.mode {
 			WriteMode::Normal => self.write_byte_normal(byte),
-			WriteMode::Serial => self.write_byte_serial(byte),
+			WriteMode::Srl => self.write_byte_srl(byte),
 		}
 	}
 
@@ -175,13 +175,13 @@ impl Writer {
 		}
 	}
 
-	fn write_byte_serial(&mut self, byte: u8) {
+	fn write_byte_srl(&mut self, byte: u8) {
 		if self.screen[SERIAL_SCREEN].column_position >= VGA_COLUMNS {
-			self.new_line_serial();
+			self.new_line_srl();
 		}
 
 		match byte {
-			b'\n' => self.new_line_serial(),
+			b'\n' => self.new_line_srl(),
 			byte => {
 				self.screen[SERIAL_SCREEN].buffer[self.screen[SERIAL_SCREEN].row_position
 					* VGA_COLUMNS + self.screen[SERIAL_SCREEN]
@@ -191,30 +191,30 @@ impl Writer {
 		}
 	}
 
-	fn new_line_serial(&mut self) {
-		let serial_screen = &mut self.screen[SERIAL_SCREEN];
-		serial_screen.column_position = 0;
-		if serial_screen.row_position < VGA_ROWS - 1 {
-			serial_screen.row_position += 1;
+	fn new_line_srl(&mut self) {
+		let srl_screen = &mut self.screen[SERIAL_SCREEN];
+		srl_screen.column_position = 0;
+		if srl_screen.row_position < VGA_ROWS - 1 {
+			srl_screen.row_position += 1;
 		} else {
-			self.scroll_screen_serial();
+			self.scroll_screen_srl();
 		}
 	}
 
-	fn scroll_screen_serial(&mut self) {
-		let serial_screen = &mut self.screen[SERIAL_SCREEN];
+	fn scroll_screen_srl(&mut self) {
+		let srl_screen = &mut self.screen[SERIAL_SCREEN];
 
 		for row in 1..VGA_ROWS {
 			for col in 0..VGA_COLUMNS {
-				let character = serial_screen.buffer[row * VGA_COLUMNS + col];
-				serial_screen.buffer[(row - 1) * VGA_COLUMNS + col] = character;
+				let character = srl_screen.buffer[row * VGA_COLUMNS + col];
+				srl_screen.buffer[(row - 1) * VGA_COLUMNS + col] = character;
 			}
 		}
 
-		self.clear_line_serial(VGA_LAST_LINE);
+		self.clear_line_srl(VGA_LAST_LINE);
 	}
 
-	fn clear_line_serial(&mut self, row: usize) {
+	fn clear_line_srl(&mut self, row: usize) {
 		for col in 0..VGA_COLUMNS {
 			self.screen[SERIAL_SCREEN].buffer[row * VGA_COLUMNS + col] = b' ';
 		}

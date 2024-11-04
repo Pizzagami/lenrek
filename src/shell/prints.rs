@@ -40,15 +40,15 @@ pub fn print_welcome_message() {
 }
 
 #[derive(Copy, Clone)]
-pub enum PrintStackMode {
+pub enum PrintSM {
 	Vga,
-	Serial,
+	Srl,
 }
 
-pub fn print_stack(line: &str, mode: PrintStackMode) {
+pub fn print_stack(line: &str, mode: PrintSM) {
 	let trimmed_line = match mode {
-		PrintStackMode::Vga => line["stack".len()..].trim(),
-		PrintStackMode::Serial => line["hexdump".len()..].trim(),
+		PrintSM::Vga => line["stack".len()..].trim(),
+		PrintSM::Srl => line["hexdump".len()..].trim(),
 	};
 
 	let args = &trimmed_line;
@@ -78,7 +78,7 @@ pub fn print_stack(line: &str, mode: PrintStackMode) {
 			unsafe {
 				core::arch::asm!("mov {}, cr3", out(reg) cr3);
 			}
-			println_serial!("cr3: {:x}", cr3);
+			println_srl!("cr3: {:x}", cr3);
 						let esp: usize;
 			unsafe {
 				core::arch::asm!("mov {}, esp", out(reg) esp);
@@ -117,7 +117,7 @@ pub fn help() {
 	print_help_line("echo", "display a line of text");
 	print_help_line("clear", "clear the screen");
 	print_help_line("stack ", "print the stack");
-	print_help_line("hexdump", "print to the serial COM a hexdump of memory");
+	print_help_line("hexdump", "print to the srl COM a hexdump of memory");
 	print_help_line(
 		"date | time | uptime",
 		"display the current date | time | uptime",

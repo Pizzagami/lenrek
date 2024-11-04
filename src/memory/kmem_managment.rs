@@ -1,5 +1,5 @@
 use core::{mem::size_of, ptr::addr_of};
-use crate::print_serial;
+use crate::print_srl;
 use super::page_directory::{PAGE_DIRECTORY_ADDR, PAGE_TABLES_ADDR, PAGE_TABLE_SIZE};
 use lazy_static::lazy_static;
 use spin::Mutex;
@@ -70,7 +70,7 @@ impl KmemManager {
 		let max_blocks = self.memory_size / PMMNGR_BLOCK_SIZE;
 		let memory_map_size = max_blocks / PMMNGR_BLOCKS_PER_INDEX;
 
-		println_serial!("Initializing Physical Memory Manager");
+		println_srl!("Initializing Physical Memory Manager");
 		unsafe {
 			MEMORY_MAP = addr_of!(_kernel_end) as *const u8 as u32;
 			PMM_ADDRESS = align_up(MEMORY_MAP + memory_map_size);
@@ -78,16 +78,16 @@ impl KmemManager {
 			PAGE_TABLES_ADDR = PAGE_DIRECTORY_ADDR + 0x1000;
 			PAGE_TABLE_END = PAGE_TABLES_ADDR + PAGE_TABLE_SIZE as u32 + 0x1000;	
 			
-			println_serial!("User space start:         {:#x}", PS_START);
-			println_serial!("User space end:           {:#x}", PS_E);
-			println_serial!("Kernel space start:       {:#x}", KS_S);
-			println_serial!("Memory map address:       {:#x}", MEMORY_MAP);
-			println_serial!("PMM address:              {:#x}", PMM_ADDRESS);
-			println_serial!("Page directory address:   {:#x}", PAGE_DIRECTORY_ADDR);
-			println_serial!("Page tables address:      {:#x}", PAGE_TABLES_ADDR);
-			println_serial!("Kernel heap start:        {:#x}", KERNEL_HEAP_START as u32);
-			println_serial!("Kernel heap end:          {:#x}", KERNEL_HEAP_END as u32);
-			println_serial!("Kernel space end:         {:#x}", KS_END);
+			println_srl!("User space start:         {:#x}", PS_START);
+			println_srl!("User space end:           {:#x}", PS_E);
+			println_srl!("Kernel space start:       {:#x}", KS_S);
+			println_srl!("Memory map address:       {:#x}", MEMORY_MAP);
+			println_srl!("PMM address:              {:#x}", PMM_ADDRESS);
+			println_srl!("Page directory address:   {:#x}", PAGE_DIRECTORY_ADDR);
+			println_srl!("Page tables address:      {:#x}", PAGE_TABLES_ADDR);
+			println_srl!("Kernel heap start:        {:#x}", KERNEL_HEAP_START as u32);
+			println_srl!("Kernel heap end:          {:#x}", KERNEL_HEAP_END as u32);
+			println_srl!("Kernel space end:         {:#x}", KS_END);
 		}
 		
 		self.memory_map = unsafe {
@@ -96,7 +96,7 @@ impl KmemManager {
 		self.memory_map_size = memory_map_size;
 		self.max_blocks = self.memory_size / PMMNGR_BLOCK_SIZE;
 		
-		println_serial!(
+		println_srl!(
 			"Memory size: {:#x}, max blocks: {:#x}, memory map size: {:#x}",
 			self.memory_size,
 			self.max_blocks,
@@ -125,7 +125,7 @@ impl KmemManager {
 		self.set_region_as_unavailable(KS_S - HK_OFST, unsafe {
 			PAGE_TABLE_END as u32 - KS_S - 1
 		});
-		println_serial!("PMM memory size: {:#x}", self.memory_size);
+		println_srl!("PMM memory size: {:#x}", self.memory_size);
 	}
 	
 	fn mmap_set(&mut self, bit: u32) {
@@ -170,7 +170,7 @@ impl KmemManager {
 	}
 
 	pub fn allocate_frame(&mut self) -> Result<u32, &'static str> {
-		println_serial!(
+		println_srl!(
 			"Used blocks: {:#x}, Max blocks: {:#x}",
 			self.used_blocks,
 			self.max_blocks
@@ -192,7 +192,7 @@ impl KmemManager {
 				}
 			}
 		}
-		println_serial!("Frame: {:#x}", frame);
+		println_srl!("Frame: {:#x}", frame);
 		if frame != 0 {
 			self.mmap_set(frame);
 			Ok(frame * PMMNGR_BLOCK_SIZE)
@@ -211,9 +211,9 @@ impl KmemManager {
 		let memory_map_entries: &[MltbtMME] = self.memory_map_entries.unwrap();
 
 		let mut i = 0;
-		println_serial!("      Memory map entry: ");
+		println_srl!("      Memory map entry: ");
 		for entry in memory_map_entries {
-			println_serial!(
+			println_srl!(
 				"      Address: 0x{:08x} | Length: 0x{:07x} | Type: {:#x} ({})",
 				entry.address,
 				entry.len,
@@ -253,7 +253,7 @@ impl KmemManager {
 
 	#[allow(dead_code)]
 	pub fn print_memory_map(&self) {
-		println_serial!("Memory Map:");
+		println_srl!("Memory Map:");
 		for index in 0..(self.memory_map_size as usize) {
 			let block = self.memory_map[index]; // Access the block directly using index
 
@@ -265,11 +265,11 @@ impl KmemManager {
 				}
 			}
 
-			print_serial!("0x{:08x}: ", index * 32 * PMMNGR_BLOCK_SIZE as usize);
+			print_srl!("0x{:08x}: ", index * 32 * PMMNGR_BLOCK_SIZE as usize);
 			for bit in bits.iter() {
-				print_serial!("{}", bit);
+				print_srl!("{}", bit);
 			}
-			println_serial!();
+			println_srl!();
 		}
 	}
 }

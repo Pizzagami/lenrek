@@ -1,6 +1,6 @@
 use crate::exceptions::interrupts::{self, TICKS};
 use crate::shell::history::HISTORY;
-use crate::shell::prints::PrintStackMode;
+use crate::shell::prints::PrintSM;
 use crate::shell::prints::{help, print_stack, print_unknown_command};
 use crate::tools::debug::LogLevel;
 use crate::tools::io::{outb, outw};
@@ -239,9 +239,9 @@ fn handle_special_commands(line: &str) {
 	if line.starts_with("echo") {
 		echo(line);
 	} else if line.starts_with("stack") {
-		print_stack(line, PrintStackMode::Vga);
+		print_stack(line, PrintSM::Vga);
 	} else if line.starts_with("hexdump") {
-		print_stack(line, PrintStackMode::Serial);
+		print_stack(line, PrintSM::Srl);
 	} else if line.starts_with("test_syscall") {
 		test_syscall(line);
 	} else {

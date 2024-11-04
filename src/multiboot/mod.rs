@@ -125,7 +125,7 @@ pub fn validate_multiboot(magic: u32, address: u32) {
 
 pub fn read_multiboot_info(address: u32) {
 	let multiboot_info: &MultibootInfo = unsafe { &*(address as *const MultibootInfo) };
-	println_serial!(
+	println_srl!(
 		"\nGRUB: Announced MBI size: {:#x}",
 		multiboot_info.total_size
 	);
@@ -140,19 +140,19 @@ pub fn read_multiboot_info(address: u32) {
 			MULTIBOOT_TAG_TYPE_CMDLINE => {
 				let cmdline = unsafe { &*(current_tag as *const MultibootTagString) };
 				if cmdline.string != 0 {
-					println_serial!("      Command line: {}", u8_to_str(&cmdline.string));
+					println_srl!("      Command line: {}", u8_to_str(&cmdline.string));
 				}
 			}
 			MULTIBOOT_TAG_TYPE_BOOT_LOADER_NAME => {
 				let bootloader_name = unsafe { &*(current_tag as *const MultibootTagString) };
-				println_serial!(
+				println_srl!(
 					"      Bootloader name: {}",
 					u8_to_str(&bootloader_name.string)
 				);
 			}
 			MULTIBOOT_TAG_TYPE_BASIC_MEMINFO => {
 				_meminfo = Some(unsafe { &*(current_tag as *const MultibootTagBasicMemInfo) });
-				println_serial!(
+				println_srl!(
 					"      Mem lower: {}KB, Mem upper: {}KB",
 					_meminfo.unwrap().mem_lower,
 					_meminfo.unwrap().mem_upper
@@ -160,7 +160,7 @@ pub fn read_multiboot_info(address: u32) {
 			}
 			MULTIBOOT_TAG_TYPE_BOOTDEV => {
 				let bootdev = unsafe { &*(current_tag as *const MultibootTagBootDev) };
-				println_serial!(
+				println_srl!(
 					"      Boot device: {:#x}, {}, {}",
 					bootdev.biosdev,
 					bootdev.partition,

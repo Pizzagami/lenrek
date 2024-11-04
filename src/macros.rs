@@ -15,24 +15,24 @@ macro_rules! println {
 }
 
 #[macro_export]
-macro_rules! print_serial {
+macro_rules! print_srl {
 	($($arg:tt)*) => {
-		$crate::macros::print_serial(format_args!($($arg)*))
+		$crate::macros::print_srl(format_args!($($arg)*))
 	};
 
 }
 
-macro_rules! println_serial {
-	() => (print_serial!("\n"));
-	($($arg:tt)*) => (print_serial!("{}\n", format_args!($($arg)*)));
+macro_rules! println_srl {
+	() => (print_srl!("\n"));
+	($($arg:tt)*) => (print_srl!("{}\n", format_args!($($arg)*)));
 }
 
 #[macro_export]
 macro_rules! log {
     ($level:expr, $($arg:tt)*) => {{
         let level_str = $level.as_str();
-        $crate::macros::print_serial(format_args!("{}", level_str));
-        $crate::macros::print_serial(format_args!(": {}\n", format_args!($($arg)*)));
+        $crate::macros::print_srl(format_args!("{}", level_str));
+        $crate::macros::print_srl(format_args!(": {}\n", format_args!($($arg)*)));
     }};
 }
 
@@ -129,17 +129,17 @@ pub fn print(args: fmt::Arguments) {
 	interrupts::enable();
 }
 
-pub fn print_serial(args: fmt::Arguments) {
+pub fn print_srl(args: fmt::Arguments) {
 	use core::fmt::Write;
 	interrupts::disable();
 	let mut debug = DEBUG.lock();
 	let mut writer = WRITER.lock();
 
-	debug.write_fmt(args).expect("Printing to serial failed");
-	writer.set_mode(WriteMode::Serial);
+	debug.write_fmt(args).expect("Printing to srl failed");
+	writer.set_mode(WriteMode::Srl);
 	writer
 		.write_fmt(args)
-		.expect("Writing to serial screen failed");
+		.expect("Writing to srl screen failed");
 	writer.set_mode(WriteMode::Normal);
 	interrupts::enable();
 }

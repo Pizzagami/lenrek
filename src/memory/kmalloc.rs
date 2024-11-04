@@ -1,6 +1,6 @@
 use crate::tools::debug::LogLevel;
 use crate::log;
-use crate::print_serial;
+use crate::print_srl;
 
 use super::page_directory::{map_address, unmap_address, PAGE_SIZE};
 
@@ -225,7 +225,7 @@ pub unsafe fn kbrk(increment: isize) {
 			if KMALLOC_BREAK == KMALLOC_END {
 				return;
 			}
-			println_serial!("Mapping address {:p}...", KMALLOC_BREAK);
+			println_srl!("Mapping address {:p}...", KMALLOC_BREAK);
 			map_address(KMALLOC_BREAK);
 			KMALLOC_BREAK = KMALLOC_BREAK.offset(PAGE_SIZE as isize);
 		}
@@ -239,7 +239,7 @@ pub unsafe fn kbrk(increment: isize) {
 			if KMALLOC_BREAK == KMALLOC_START {
 				return;
 			}
-			println_serial!("Unmapping address {:p}...", KMALLOC_BREAK);
+			println_srl!("Unmapping address {:p}...", KMALLOC_BREAK);
 			unmap_address(KMALLOC_BREAK);
 			KMALLOC_BREAK = KMALLOC_BREAK.offset(-(PAGE_SIZE as isize));
 		}
@@ -250,7 +250,7 @@ pub unsafe fn kbrk(increment: isize) {
 
 pub unsafe fn kheap_init() {
 	KMALLOC_BREAK = KMALLOC_START;
-	println_serial!(
+	println_srl!(
 		"KMALLOC_BREAK: {:p}, KMALLOC_START: {:p}, KMALLOC_END: {:p}",
 		KMALLOC_BREAK,
 		KMALLOC_START,
@@ -272,7 +272,7 @@ fn print_kmalloc_info() {
 		let mut current_header = KMALLOC_START as *mut KmallocHeader;
 		while current_header != core::ptr::null_mut() {
 			let header = &*current_header;
-			println_serial!(
+			println_srl!(
 				"Address: {:p}, Size: {:5}, Used: {:4}",
 				current_header,
 				header.size(),
@@ -280,7 +280,7 @@ fn print_kmalloc_info() {
 			);
 			current_header = header.next();
 		}
-		println_serial!(
+		println_srl!(
 			"KMALLOC_BREAK: {:p}, KMALLOC_START: {:p}, KMALLOC_END: {:p}\n",
 			KMALLOC_BREAK,
 			KMALLOC_START,
@@ -296,7 +296,7 @@ pub fn kmalloc_test() {
 	unsafe {
 		kheap_init();
 
-		println_serial!("\n");
+		println_srl!("\n");
 		log!(LogLevel::Info, "\t\tTesting kmalloc() and kfree()\n");
 
 		let mut ptrs: [*mut u8; MAX_PTRS] = [core::ptr::null_mut(); MAX_PTRS];
@@ -330,7 +330,7 @@ pub fn kmalloc_test() {
 			ptrs[ptr_count] = ptr;
 			ptr_count += 1;
 
-			print_serial!("\tSize of the allocated block: {}\n", ksize(ptr));
+			print_srl!("\tSize of the allocated block: {}\n", ksize(ptr));
 		}
 		print_kmalloc_info();
 

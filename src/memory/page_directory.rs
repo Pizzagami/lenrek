@@ -4,7 +4,7 @@ use crate::memory::{
 	page_table_entry::FlagTablePages,
 	kmem_managment::HK_OFST,
 };
-use crate::print_serial;
+use crate::print_srl;
 use core::arch::asm;
 use core::ptr::null_mut;
 use core::sync::atomic::{AtomicPtr, Ordering};
@@ -54,27 +54,27 @@ pub fn unmap_address(virtual_address: *mut u8) {
 }
 
 pub fn enable_paging() {
-	println_serial!("Enabling paging...");
+	println_srl!("Enabling paging...");
 	let page_directory_addr = unsafe { PAGE_DIRECTORY_ADDR - HK_OFST };
 	unsafe {
 		asm!("mov cr3, {}", in(reg) page_directory_addr);
 		asm!("mov cr3, {}", in(reg) page_directory_addr);
 	}
 
-	print_serial!("Mapping page tables...");
+	print_srl!("Mapping page tables...");
 	unsafe {
 		let mut cr0: u32;
 		asm!("mov {}, cr0", out(reg) cr0);
 		cr0 |= 0x80000000; // Set the PG bit to enable paging
 		asm!("mov cr0, {}", in(reg) cr0);
 	}
-	println_serial!("Paging enabled!");
+	println_srl!("Paging enabled!");
 }
 
 pub unsafe fn init_page_directory() {
 	PAGE_DIRECTORY = AtomicPtr::new(PAGE_DIRECTORY_ADDR as *mut PageDirectory);
 	let page_directory = &mut *PAGE_DIRECTORY.load(Ordering::Relaxed);
-	println_serial!("Page Directory __ : {:p}", page_directory);
+	println_srl!("Page Directory __ : {:p}", page_directory);
 
 	let mut current_page_table = PAGE_TABLES_ADDR;
 	for page_directory_entry in page_directory.entries.iter_mut().enumerate() {

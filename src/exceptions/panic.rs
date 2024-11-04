@@ -1,5 +1,5 @@
 use crate::exceptions::interrupts::InterruptStackFrame;
-use crate::shell::prints::PrintStackMode;
+use crate::shell::prints::PrintSM;
 use crate::tools::debug::LogLevel;
 use crate::tools::librs::{hexdump, hlt};
 use core::arch::asm;
@@ -78,10 +78,10 @@ pub fn handle_panic<D: Display>(info: &D, stack_frame: Option<&InterruptStackFra
 	unsafe {
 		let stack_start_address = STACK_DUMP.as_ptr();
 		log!(LogLevel::Info, "Stack dump at {:#x}", stack_start_address as usize);
-		hexdump(stack_start_address as usize, STACK_DUMP_SIZE, PrintStackMode::Serial);
+		hexdump(stack_start_address as usize, STACK_DUMP_SIZE, PrintSM::Srl);
 	}
 
-	println!("See serial output for more information.");
+	println!("See srl output for more information.");
 
 	loop {
 		hlt();

@@ -33,8 +33,8 @@ pub fn process_keyboard_input() {
 	} else {
 		return;
 	}
-	let serial_screen = SERIAL_SCREEN.load(Ordering::SeqCst);
-	if serial_screen {
+	let srl_screen = SERIAL_SCREEN.load(Ordering::SeqCst);
+	if srl_screen {
 		WRITER.lock().show_cursor();
 		SERIAL_SCREEN.store(false, Ordering::SeqCst);
 		vga::change_display(0);

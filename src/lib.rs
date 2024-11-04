@@ -37,7 +37,7 @@ pub extern "C" fn main() -> ! {
 fn init(multiboot_magic: u32, multiboot_addr: u32) {
     multiboot::validate_multiboot(multiboot_magic, multiboot_addr);
     interrupts::disable();
-    debug::init_serial_port();
+    debug::init_srl_port();
     gdt::init();
     idt::init();
     interrupts::init();

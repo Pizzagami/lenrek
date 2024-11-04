@@ -1,9 +1,9 @@
-//! # Serial Port Debugging Module
+//! # Srl Port Debugging Module
 //!
-//! Provides functionality for serial port communication, primarily used for debugging purposes.
-//! The module defines methods for initializing the serial port and writing data to it. It includes
+//! Provides functionality for srl port communication, primarily used for debugging purposes.
+//! The module defines methods for initializing the srl port and writing data to it. It includes
 //! the `Debug` struct that implements the `fmt::Write` trait, allowing formatted strings to be sent
-//! over the serial port.
+//! over the srl port.
 
 use crate::tools::io::{inb, outb};
 use core::fmt;
@@ -53,18 +53,18 @@ impl Debug {
 		unsafe { (inb(SERIAL_PORT + 5) & 0x20) != 0 }
 	}
 
-	fn write_byte_serial(&self, byte: u8) {
+	fn write_byte_srl(&self, byte: u8) {
 		while !self.is_transmit_empty() {}
 		unsafe {
 			outb(SERIAL_PORT, byte);
 		}
 	}
 
-	pub fn write_string_serial(&self, s: &str) {
+	pub fn write_string_srl(&self, s: &str) {
 		for byte in s.bytes() {
-			self.write_byte_serial(byte);
+			self.write_byte_srl(byte);
 			if byte == b'\n' {
-				self.write_byte_serial(b'\r');
+				self.write_byte_srl(b'\r');
 			}
 		}
 	}
@@ -72,12 +72,12 @@ impl Debug {
 
 impl fmt::Write for Debug {
 	fn write_str(&mut self, s: &str) -> fmt::Result {
-		self.write_string_serial(s);
+		self.write_string_srl(s);
 		Ok(())
 	}
 }
 
-pub fn init_serial_port() {
+pub fn init_srl_port() {
 	unsafe {
 		outb(SERIAL_PORT + 1, 0x00);
 		outb(SERIAL_PORT + 3, 0x80);
@@ -87,5 +87,5 @@ pub fn init_serial_port() {
 		outb(SERIAL_PORT + 2, 0xc7);
 		outb(SERIAL_PORT + 4, 0x0b);
 	}
-	log!(LogLevel::Info, "Serial port initialized")
+	log!(LogLevel::Info, "Srl port initialized")
 }

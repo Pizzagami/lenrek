@@ -199,7 +199,7 @@ pub unsafe fn vbrk(increment: isize) {
 			if VMALLOC_BREAK == VMALLOC_END {
 				return;
 			}
-			println_serial!("Mapping address {:p}...", VMALLOC_BREAK);
+			println_srl!("Mapping address {:p}...", VMALLOC_BREAK);
 			map_address(VMALLOC_BREAK);
 			VMALLOC_BREAK = VMALLOC_BREAK.offset(PAGE_SIZE as isize);
 		}
@@ -209,7 +209,7 @@ pub unsafe fn vbrk(increment: isize) {
 			if VMALLOC_BREAK == VMALLOC_START {
 				return;
 			}
-			println_serial!("Unmapping address {:p}...", VMALLOC_BREAK);
+			println_srl!("Unmapping address {:p}...", VMALLOC_BREAK);
 			unmap_address(VMALLOC_BREAK);
 			VMALLOC_BREAK = VMALLOC_BREAK.offset(-(PAGE_SIZE as isize));
 		}
@@ -221,7 +221,7 @@ pub unsafe fn vbrk(increment: isize) {
 pub unsafe fn vheap_init() {
 	VMALLOC_BREAK = VMALLOC_START;
 	MAX_ALLOCATION_SIZE = 0x100020;
-	println_serial!(
+	println_srl!(
 		"VMALLOC_BREAK: {:p}, VMALLOC_START: {:p}, VMALLOC_END: {:p}",
 		VMALLOC_BREAK,
 		VMALLOC_START,
@@ -243,7 +243,7 @@ fn print_vmalloc_info() {
 		let mut current_header = VMALLOC_START as *mut VmallocHeader;
 		while current_header != core::ptr::null_mut() {
 			let header = &*current_header;
-			println_serial!(
+			println_srl!(
 				"Address: {:p}, Size: {:5}, Used: {:4}",
 				current_header,
 				header.size(),
@@ -251,7 +251,7 @@ fn print_vmalloc_info() {
 			);
 			current_header = header.next();
 		}
-		println_serial!(
+		println_srl!(
 			"VMALLOC_BREAK: {:p}, VMALLOC_START: {:p}, VMALLOC_END: {:p}\n",
 			VMALLOC_BREAK,
 			VMALLOC_START,
@@ -266,7 +266,7 @@ pub fn vmalloc_test() {
 	unsafe {
 		vheap_init();
 
-		println_serial!("\n");
+		println_srl!("\n");
 		log!(LogLevel::Info, "\t\tTesting vmalloc() and kfree()\n");
 
 		let mut ptrs: [*mut u8; MAX_PTRS] = [core::ptr::null_mut(); MAX_PTRS];
@@ -296,7 +296,7 @@ pub fn vmalloc_test() {
 			let ptr = vmalloc(size).expect("Failed to allocate memory");
 			ptrs[ptr_count] = ptr;
 			ptr_count += 1;
-			println_serial!("\tSize of the allocated block: {}", vsize(ptr));
+			println_srl!("\tSize of the allocated block: {}", vsize(ptr));
 		}
 		print_vmalloc_info();
 
