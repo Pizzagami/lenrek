@@ -292,7 +292,7 @@ pub fn vmalloc_test() {
 			if ptr_count >= MAX_PTRS {
 				break;
 			}
-			let size = (i - 4) * 50; // Smaller sizes
+			let size = (i - 4) * 50;
 			let ptr = vmalloc(size).expect("Failed to allocate memory");
 			ptrs[ptr_count] = ptr;
 			ptr_count += 1;
@@ -314,9 +314,9 @@ pub fn vmalloc_test() {
 		print_vmalloc_info();
 
 		log!(LogLevel::Info, "Adjusting VMALLOC_BREAK multiple times\n");
-		vbrk(500); // Increment
-		vbrk(-300); // Decrement
-		vbrk(200); // Increment again
+		vbrk(500); 
+		vbrk(-300);
+		vbrk(200);
 		print_vmalloc_info();
 
 		log!(LogLevel::Info, "Freeing all blocks\n");

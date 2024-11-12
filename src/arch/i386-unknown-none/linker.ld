@@ -1,4 +1,4 @@
-HIGHER_HALF_OFF = 0xC0000000;
+HH_OFF = 0xC0000000;
 ENTRY(start)
 
 PHDRS {
@@ -20,13 +20,13 @@ SECTIONS {
         KEEP(*(.multiboot_header))
     } : boot
 
-    . = HIGHER_HALF_OFF + 1M;
+    . = HH_OFF + 1M;
     _kernel_start = .;
 
-    .text ALIGN(4K) : AT(ADDR(.text) - HIGHER_HALF_OFF) { *(.text .text.*) } : text
-    .rodata ALIGN(4K) : AT(ADDR(.rodata) - HIGHER_HALF_OFF) { *(.rodata .rodata.*) } : rodata
-    .data ALIGN(4K) : AT(ADDR(.data) - HIGHER_HALF_OFF) { *(.data .data.*) } : data
-    .bss ALIGN(4K) (NOLOAD) : AT(ADDR(.bss) - HIGHER_HALF_OFF) { *(.bss .bss.*) *(COMMON) *(.bootstrap_stack) } : bss
+    .text ALIGN(4K) : AT(ADDR(.text) - HH_OFF) { *(.text .text.*) } : text
+    .rodata ALIGN(4K) : AT(ADDR(.rodata) - HH_OFF) { *(.rodata .rodata.*) } : rodata
+    .data ALIGN(4K) : AT(ADDR(.data) - HH_OFF) { *(.data .data.*) } : data
+    .bss ALIGN(4K) (NOLOAD) : AT(ADDR(.bss) - HH_OFF) { *(.bss .bss.*) *(COMMON) *(.bootstrap_stack) } : bss
 
     . = ALIGN(4K);
     _kernel_end = .;

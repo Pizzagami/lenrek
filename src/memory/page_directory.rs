@@ -65,7 +65,7 @@ pub fn enable_paging() {
 	unsafe {
 		let mut cr0: u32;
 		asm!("mov {}, cr0", out(reg) cr0);
-		cr0 |= 0x80000000; // Set the PG bit to enable paging
+		cr0 |= 0x80000000;
 		asm!("mov cr0, {}", in(reg) cr0);
 	}
 	println_srl!("Paging enabled!");

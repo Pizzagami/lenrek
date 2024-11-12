@@ -72,29 +72,25 @@ fn sys_exit(params: &mut SyscallParameters) {
 }
 
 fn sys_write(params: &mut SyscallParameters) {
-	let fd = params.regs.ebx; // File descriptor
-	let buf_ptr = params.regs.ecx as *const u8; // Buffer pointer
-	let count = params.regs.edx as usize; // Number of bytes to write
+	let fd = params.regs.ebx;
+	let buf_ptr = params.regs.ecx as *const u8;
+	let count = params.regs.edx as usize;
 
 	if fd == 1 {
-		// Assuming '1' is standard output
-		// Directly iterate over the memory location
 		for i in 0..count {
 			let char_byte = unsafe { *buf_ptr.add(i) };
 			print!("{}", char_byte as char);
 		}
-		println!(); // Newline for ending the output
+		println!();
 	} else {
 		log!(LogLevel::Error, "Unsupported file descriptor: {}", fd);
 	}
 }
 
 fn sys_read(params: &mut SyscallParameters) {
-	// In a real scenario, this would involve waiting for input
-	// In this simplified version, just log the read attempt
-	let fd = params.regs.ebx; // File descriptor
-	let buf_ptr = params.regs.ecx; // Buffer pointer
-	let count = params.regs.edx; // Number of bytes to read
+	let fd = params.regs.ebx;
+	let buf_ptr = params.regs.ecx;
+	let count = params.regs.edx;
 
 	log!(
 		LogLevel::Debug,

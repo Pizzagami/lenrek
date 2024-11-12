@@ -31,20 +31,20 @@ pub static PICS: Mutex<ChainedPics> =
 #[repr(u8)]
 pub enum InterruptIndex {
 	Timer = PIC_1_OFF,
-	PrimaryAtaHardDisk,
-	SecondaryAtaHardDisk,
-	Ps2Mouse,
 	Keyboard,
 	Cascade,
-	Floppy,
-	Free1,
-	Free2,
-	Free3,
 	Com2,
 	Com1,
 	Lpt2,
+	Floppy,
 	Lpt1,
 	Rtc,
+	Free1,
+	Free2,
+	Free3,
+	Ps2Mouse,
+	PrimaryAtaHardDisk,
+	SecondaryAtaHardDisk,
 }
 
 impl InterruptIndex {

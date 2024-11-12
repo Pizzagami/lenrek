@@ -325,7 +325,7 @@ pub fn kmalloc_test() {
 			if ptr_count >= MAX_PTRS {
 				break;
 			}
-			let size = (i - 4) * 50; // Smaller sizes
+			let size = (i - 4) * 50;
 			let ptr: *mut u8 = kmalloc(size).expect("Failed to allocate memory");
 			ptrs[ptr_count] = ptr;
 			ptr_count += 1;

@@ -7,7 +7,7 @@ use crate::multiboot::MltbtMME;
 use crate::multiboot::MltbtMMT;
 
 const MAX_REGIONS: usize = 10;
-const PMMNGR_BLOCK_SIZE: u32 = 4096; // 4KiB
+const PMMNGR_BLOCK_SIZE: u32 = 4096;
 const PMMNGR_BLOCKS_PER_INDEX: u32 = 32;
 const USED_BLOCK: u32 = 0xFFFFFFFF;
 
@@ -255,7 +255,7 @@ impl KmemManager {
 	pub fn print_memory_map(&self) {
 		println_srl!("Memory Map:");
 		for index in 0..(self.memory_map_size as usize) {
-			let block = self.memory_map[index]; // Access the block directly using index
+			let block = self.memory_map[index];
 
 			let mut bits: [char; 32] = ['0'; 32];
 

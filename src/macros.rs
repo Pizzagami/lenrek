@@ -52,14 +52,14 @@ macro_rules! handler {
 
 					// Calculate the correct stack frame pointer
 					"mov eax, esp",
-					"add eax, 36", // Adjust for 'pushad' and possibly other pushed registers
-					"push eax", // Push stack frame pointer
+					"add eax, 36",
+					"push eax",
 
 					// Call the actual interrupt handler
 					"call {}",
 
 					// Restore all general-purpose registers
-					"pop eax", // Clean up the stack
+					"pop eax",
 					"popad",
 
 					// Restore base pointer and return from interrupt
@@ -82,35 +82,20 @@ macro_rules! handler_with_error_code {
         extern "C" fn wrapper() {
             unsafe {
                 asm!(
-                    // Set up stack frame
                     "push ebp",
                     "mov ebp, esp",
-                    
-                    // Save all general-purpose registers
                     "pushad",
-
-					// Retrieve error code
 					"mov edx, [esp + 36]",
-
-					// Calculate the correct stack frame pointer
-                    "lea eax, [esp + 40]", // Adjust for 'pushad' and error code
-					"push edx", // Push error code
-					"push eax", // Push stack frame pointer
-
-                    // Call the actual interrupt handler
+                    "lea eax, [esp + 40]",
+					"push edx",
+					"push eax",
                     "call {}",
-
-					"pop eax", // Clean up the stack
-					"pop edx", // Clean the error code
-
-					// Restore all general-purpose registers
+					"pop eax",
+					"pop edx",
 					"popad",
-
-                    "add esp, 4", // Remove error code from stack
-					
-                    // Restore base pointer and return from interrupt
+                    "add esp, 4",
                     "pop ebp",
-                    "iretd", // Return from interrupt in 32-bit mode
+                    "iretd",
                     sym $name,
                     options(noreturn)
                 );

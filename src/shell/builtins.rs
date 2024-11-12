@@ -187,7 +187,7 @@ pub fn trigger_syscall(syscall_number: u32, arg1: u32, arg2: u32, arg3: u32) {
 }
 
 fn test_syscall(line: &str) {
-	let mut parts = [""; 5]; // syscall name, syscall number, arg1, arg2, arg3
+	let mut parts = [""; 5];
 	let mut part_index = 0;
 
 	for word in line.split_whitespace() {

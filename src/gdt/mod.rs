@@ -97,7 +97,7 @@ fn load_gdt() {
 fn load_data_segments() {
 	unsafe {
 		asm!(
-			"mov ax, 0x10", // Kernel data segments
+			"mov ax, 0x10",
 			"mov ds, ax",
 			"mov es, ax",
 			"mov fs, ax",
@@ -111,7 +111,7 @@ fn load_data_segments() {
 fn load_stack_segment() {
 	unsafe {
 		asm!(
-			"mov ax, 0x18", // Kernel stack segment
+			"mov ax, 0x18",
 			"mov ss, ax",
 			options(nostack, preserves_flags)
 		);
@@ -121,7 +121,7 @@ fn load_stack_segment() {
 fn load_code_segment() {
 	unsafe {
 		asm!(
-			"push 0x08", // Kernel code segment
+			"push 0x08",
 			"lea eax, [1f]",
 			"push eax",
 			"retf",
