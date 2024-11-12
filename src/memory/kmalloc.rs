@@ -146,7 +146,7 @@ pub unsafe fn kfree(kmalloc_address: *mut u8) {
 		kmalloc_address
 	);
 	let header = (kmalloc_address as *mut KmallocHeader)
-		.off(-1)
+		.offset(-1)
 		.as_mut()
 		.unwrap();
 
@@ -199,7 +199,7 @@ pub unsafe fn kfree(kmalloc_address: *mut u8) {
 
 pub unsafe fn ksize(kmalloc_address: *mut u8) -> usize {
 	let header = (kmalloc_address as *mut KmallocHeader)
-		.off(-1)
+		.offset(-1)
 		.as_ref()
 		.unwrap();
 
@@ -227,7 +227,7 @@ pub unsafe fn kbrk(increment: isize) {
 			}
 			println_srl!("Mapping address {:p}...", KMALLOC_BREAK);
 			map_address(KMALLOC_BREAK);
-			KMALLOC_BREAK = KMALLOC_BREAK.off(PAGE_SIZE as isize);
+			KMALLOC_BREAK = KMALLOC_BREAK.offset(PAGE_SIZE as isize);
 		}
 	} else if increment < 0 {
 		let y = - increment;
@@ -241,7 +241,7 @@ pub unsafe fn kbrk(increment: isize) {
 			}
 			println_srl!("Unmapping address {:p}...", KMALLOC_BREAK);
 			unmap_address(KMALLOC_BREAK);
-			KMALLOC_BREAK = KMALLOC_BREAK.off(-(PAGE_SIZE as isize));
+			KMALLOC_BREAK = KMALLOC_BREAK.offset(-(PAGE_SIZE as isize));
 		}
 	} else {
 		return;

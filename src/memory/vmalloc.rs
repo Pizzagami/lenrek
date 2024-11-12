@@ -122,7 +122,7 @@ pub unsafe fn vmalloc(mut size: usize) -> Option<*mut u8> {
 pub unsafe fn kfree(vmalloc_address: *mut u8) {
 	log!(LogLevel::Info, "kfree() freeing address: {:p}", vmalloc_address);
 	let header = (vmalloc_address as *mut VmallocHeader)
-		.off(-1)
+		.offset(-1)
 		.as_mut()
 		.unwrap();
 
@@ -173,7 +173,7 @@ pub unsafe fn kfree(vmalloc_address: *mut u8) {
 
 pub unsafe fn vsize(vmalloc_address: *mut u8) -> usize {
 	let header = (vmalloc_address as *mut VmallocHeader)
-		.off(-1)
+		.offset(-1)
 		.as_ref()
 		.unwrap();
 
@@ -201,7 +201,7 @@ pub unsafe fn vbrk(increment: isize) {
 			}
 			println_srl!("Mapping address {:p}...", VMALLOC_BREAK);
 			map_address(VMALLOC_BREAK);
-			VMALLOC_BREAK = VMALLOC_BREAK.off(PAGE_SIZE as isize);
+			VMALLOC_BREAK = VMALLOC_BREAK.offset(PAGE_SIZE as isize);
 		}
 	} else if increment < 0 {
 		frame_number = -(increment - 1) / PAGE_SIZE as isize - 1;
@@ -211,7 +211,7 @@ pub unsafe fn vbrk(increment: isize) {
 			}
 			println_srl!("Unmapping address {:p}...", VMALLOC_BREAK);
 			unmap_address(VMALLOC_BREAK);
-			VMALLOC_BREAK = VMALLOC_BREAK.off(-(PAGE_SIZE as isize));
+			VMALLOC_BREAK = VMALLOC_BREAK.offset(-(PAGE_SIZE as isize));
 		}
 	} else {
 		return;
