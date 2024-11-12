@@ -130,11 +130,11 @@ fn cpu_info() {
 
 	for i in 0x80000002..=0x80000004 {
 		get_cpuid(i, &mut eax, &mut ebx, &mut ecx, &mut edx);
-		let offset = (i - 0x80000002) * 16;
-		cpu_brand[offset..offset + 4].copy_from_slice(&eax.to_ne_bytes());
-		cpu_brand[offset + 4..offset + 8].copy_from_slice(&ebx.to_ne_bytes());
-		cpu_brand[offset + 8..offset + 12].copy_from_slice(&ecx.to_ne_bytes());
-		cpu_brand[offset + 12..offset + 16].copy_from_slice(&edx.to_ne_bytes());
+		let off = (i - 0x80000002) * 16;
+		cpu_brand[off..off + 4].copy_from_slice(&eax.to_ne_bytes());
+		cpu_brand[off + 4..off + 8].copy_from_slice(&ebx.to_ne_bytes());
+		cpu_brand[off + 8..off + 12].copy_from_slice(&ecx.to_ne_bytes());
+		cpu_brand[off + 12..off + 16].copy_from_slice(&edx.to_ne_bytes());
 	}
 
 	let cpu_vendor_str = core::str::from_utf8(&cpu_vendor).unwrap_or("Unknown");
@@ -174,13 +174,13 @@ fn show_uptime() {
 pub fn trigger_syscall(syscall_number: u32, arg1: u32, arg2: u32, arg3: u32) {
 	use crate::exceptions::syscalls::GeneralRegs;
 	let mut regs = GeneralRegs {
-		eax: syscall_number, // Syscall number
-		ebx: arg1,           // First argument
-		ecx: arg2,           // Second argument
-		edx: arg3,           // Third argument
-		esi: 0,              // Additional registers if needed
-		edi: 0,              // Additional registers if needed
-		ebp: 0,              // Additional registers if needed
+		eax: syscall_number,
+		ebx: arg1,
+		ecx: arg2,
+		edx: arg3,
+		esi: 0,
+		edi: 0,
+		ebp: 0,
 	};
 
 	crate::exceptions::syscalls::syscall(&mut regs);

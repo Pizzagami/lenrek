@@ -14,25 +14,25 @@ pub fn print_unknown_command(line: &str) {
 pub fn print_welcome_message() {
 	clear();
 	println!("                                     :---------:    .---------:---------- ");
-	println!("                                   :#@@@@@@@@%=     +@@@@@@@#::@@@@@@@@@@.");
-	println!("                                 :#@@@@@@@@%=       +@@@@@%:  :@@@@@@@@@@.");
-	println!("                               :#@@@@@@@@%=         +@@@%-    :@@@@@@@@@@.");
-	println!("                             :#@@@@@@@@@=           +@%-      :@@@@@@@@@@.");
-	println!("                           :#@@@@@@@@@=             =-        -@@@@@@@@@@ ");
-	println!("                         :#@@@@@@@@@=                        +@@@@@@@@@*. ");
-	println!("                       :#@@@@@@@@@=                        +@@@@@@@@@*.   ");
-	println!("                     :#@@@@@@@@@=                        +@@@@@@@@@*.     ");
-	println!("                   :#@@@@@@@@@=                        +@@@@@@@@@*.       ");
-	println!("                 :#@@@@@@@@@=                        +@@@@@@@@@+.         ");
-	println!("                 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    +@@@@@@@@@#        :#.");
-	println!("                 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    +@@@@@@@@@#      :#@@.");
-	println!("                 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    +@@@@@@@@@#    :#@@@@.");
-	println!("                 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    +@@@@@@@@@#  :#@@@@@@.");
-	println!("                 ....................=@@@@@@@@@@    +@@@@@@@@@#:#@@@@@@@@.");
-	println!("                                     -@@@@@@@@@@     .................... ");
-	println!("                                     -@@@@@@@@@@     by                   ");
-	println!("                                     -@@@@@@@@@@       selgrabl           ");
-	println!("                                     -@@@@@@@@@@       braimbau           ");
+	println!("                                   :#########%=     +########::##########.");
+	println!("                                 :#########%=       +#####%:  :##########.");
+	println!("                               :#########%=         +###%-    :##########.");
+	println!("                             :##########=           +#%-      :##########.");
+	println!("                           :##########=             =-        -########## ");
+	println!("                         :##########=                        +#########*. ");
+	println!("                       :##########=                        +#########*.   ");
+	println!("                     :##########=                        +#########*.     ");
+	println!("                   :##########=                        +#########*.       ");
+	println!("                 :##########=                        +#########+.         ");
+	println!("                 ###############################    +##########        :#.");
+	println!("                 ###############################    +##########      :###.");
+	println!("                 ###############################    +##########    :#####.");
+	println!("                 ###############################    +##########  :#######.");
+	println!("                 ....................=##########    +##########:#########.");
+	println!("                                     -##########     .................... ");
+	println!("                                     -##########     by                   ");
+	println!("                                     -##########       selgrabl           ");
+	println!("                                     -##########       braimbau           ");
 	println!("                                     .----------                          ");
 	println!("");
 	println!("                       Welcome to KFS! Type 'help' for a list of commands!");
@@ -67,11 +67,11 @@ pub fn print_stack(line: &str, mode: PrintSM) {
 			GDT as usize
 		}
 		Some("idt") => {
-			let offset: usize;
+			let off: usize;
 			unsafe {
-				offset = IDT as usize;
+				off = IDT as usize;
 			}
-			offset
+			off
 		}
 		Some("cr3") => {
 			let cr3: usize;
@@ -127,18 +127,18 @@ pub fn help() {
 	print_help_line("uname", "print system information");
 	print_help_line("halt", "halt the system");
 	print_help_line("shutdown | reboot", "shutdown | reboot the system");
-	printraw("lmmmmmmmmmmmmmmmmmmmmmmmnmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmYZ");
+	printraw("---------------------------------------------------------------------------------");
 	print_help_line("F1 -> F5", "change between screens");
 	print_help_line("F9", "display welcome message");
 	print_help_line("F10", "change keyboard layout");
 	print_help_line("F11 | F12", "switch text | background color");
 
-	printraw("ZlmmmmmmmmmmmmmmmmmmmmmmmjmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmYZ");
+	printraw("---------------------------------------------------------------------------------");
 	print!(
 		" Type 'history' to view command history           {} {} navigate history        ",
 		0x1e as char, 0x1f as char
 	);
-	printraw("Zhmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm\\");
+	printraw("----------------------------------------------------------------------------------");
 	println!("");
 }
 

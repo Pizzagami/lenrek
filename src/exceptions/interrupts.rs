@@ -3,7 +3,7 @@ use crate::tools::debug::LogLevel;
 use crate::tools::io::inb;
 use crate::{
 	exceptions::{
-		keyboard::{BUFFER_HEAD, KEYBOARD_INTERRUPT_RECEIVED, SCANCODE_BUFFER},
+		keyboard::{BUFFER_HEAD, KEYBRD_INTP_RECEIVED, SCANCODE_BUFFER},
 		pic8259::ChainedPics,
 	},
 	memory::{
@@ -21,30 +21,30 @@ use super::panic::handle_panic;
 
 pub static TICKS: AtomicU32 = AtomicU32::new(0);
 
-pub const PIC_1_OFFSET: u8 = 32;
+pub const PIC_1_OFF: u8 = 32;
 
 pub static PICS: Mutex<ChainedPics> =
-	Mutex::new(unsafe { ChainedPics::new_contiguous(PIC_1_OFFSET) });
+	Mutex::new(unsafe { ChainedPics::new_contiguous(PIC_1_OFF) });
 
 #[derive(Debug, Clone, Copy)]
 #[allow(dead_code)]
 #[repr(u8)]
 pub enum InterruptIndex {
-	Timer = PIC_1_OFFSET,
+	Timer = PIC_1_OFF,
+	PrimaryAtaHardDisk,
+	SecondaryAtaHardDisk,
+	Ps2Mouse,
 	Keyboard,
 	Cascade,
-	Com2,
-	Com1,
-	Lpt2,
 	Floppy,
-	Lpt1,
-	Rtc,
 	Free1,
 	Free2,
 	Free3,
-	Ps2Mouse,
-	PrimaryAtaHardDisk,
-	SecondaryAtaHardDisk,
+	Com2,
+	Com1,
+	Lpt2,
+	Lpt1,
+	Rtc,
 }
 
 impl InterruptIndex {
@@ -60,12 +60,11 @@ impl InterruptIndex {
 #[derive(Debug)]
 #[repr(C)]
 pub struct InterruptStackFrame {
-	pub eip: u32,    // Instruction pointer
-	pub cs: u32,     // Code segment
-	pub eflags: u32, // CPU flags
-
-	pub esp: u32, // Stack pointer (optional)
-	pub ss: u32,  // Stack segment (optional)
+	pub eip: u32,
+	pub cs: u32,
+	pub eflags: u32,
+	pub esp: u32,
+	pub ss: u32,
 }
 
 pub extern "C" fn divide_by_zero(stack_frame: &mut InterruptStackFrame) {
@@ -76,7 +75,7 @@ pub extern "C" fn debug(stack_frame: &mut InterruptStackFrame) {
 	log!(LogLevel::Info, "EXCEPTION: DEBUG\n{:#?}", stack_frame);
 }
 
-pub extern "C" fn non_maskable_interrupt(stack_frame: &mut InterruptStackFrame) {
+pub extern "C" fn non_maskable_intp(stack_frame: &mut InterruptStackFrame) {
 	log!(
 		LogLevel::Info,
 		"EXCEPTION: NON MASKABLE INTERRUPT\n{:#?}",
@@ -249,7 +248,7 @@ pub extern "C" fn machine_check(stack_frame: &mut InterruptStackFrame) {
 	handle_panic(&"Machine Check", Some(stack_frame));
 }
 
-pub extern "C" fn simd_floating_point_exception(stack_frame: &mut InterruptStackFrame) {
+pub extern "C" fn simd_float_exception(stack_frame: &mut InterruptStackFrame) {
 	log!(
 		LogLevel::Info,
 		"EXCEPTION: SIMD FLOATING POINT EXCEPTION\n{:#?}",
@@ -265,27 +264,27 @@ pub extern "C" fn virtualization_exception(stack_frame: &mut InterruptStackFrame
 	);
 }
 
-pub fn timer_interrupt(_stack_frame: &mut InterruptStackFrame) {
+pub fn timer_intp(_stack_frame: &mut InterruptStackFrame) {
 	unsafe {
 		PICS.lock()
-			.notify_end_of_interrupt(InterruptIndex::Timer.as_u8());
+			.notify_end_of_intp(InterruptIndex::Timer.as_u8());
 	}
 	TICKS.fetch_add(1, Ordering::SeqCst);
 }
 
-pub fn keyboard_interrupt(_stack_frame: &mut InterruptStackFrame) {
+pub fn keybrd_intp(_stack_frame: &mut InterruptStackFrame) {
 	let scancode: u8 = unsafe { inb(0x60) };
 
 	unsafe {
 		SCANCODE_BUFFER[BUFFER_HEAD] = scancode;
 		BUFFER_HEAD = (BUFFER_HEAD + 1) % SCANCODE_BUFFER.len();
-		KEYBOARD_INTERRUPT_RECEIVED.store(true, Ordering::SeqCst);
+		KEYBRD_INTP_RECEIVED.store(true, Ordering::SeqCst);
 		PICS.lock()
-			.notify_end_of_interrupt(InterruptIndex::Keyboard.as_u8());
+			.notify_end_of_intp(InterruptIndex::Keyboard.as_u8());
 	}
 }
 
-pub fn syscall_interrupt(_stack_frame: &mut InterruptStackFrame) {
+pub fn syscall_intp(_stack_frame: &mut InterruptStackFrame) {
 	use crate::exceptions::syscalls::{syscall, GeneralRegs};
 
 	let mut registers = GeneralRegs {
@@ -350,8 +349,8 @@ pub fn init() {
 	log!(
 		LogLevel::Info,
 		"PIC successfully initialized (Master: {:#x}, Slave: {:#x})",
-		PIC_1_OFFSET,
-		PIC_1_OFFSET + 8
+		PIC_1_OFF,
+		PIC_1_OFF + 8
 	);
 	enable();
 	log!(LogLevel::Info, "Interrupts successfully enabled");

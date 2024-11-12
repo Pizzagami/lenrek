@@ -130,15 +130,15 @@ impl KmemManager {
 	
 	fn mmap_set(&mut self, bit: u32) {
 		let index = bit / 32;
-		let offset = bit % 32;
-		self.memory_map[index as usize] |= 1 << offset;
+		let off = bit % 32;
+		self.memory_map[index as usize] |= 1 << off;
 		self.used_blocks += 1;
 	}
 
 	fn mmap_unset(&mut self, bit: u32) {
 		let index = bit / 32;
-		let offset = bit % 32;
-		self.memory_map[index as usize] &= !(1 << offset);
+		let off = bit % 32;
+		self.memory_map[index as usize] &= !(1 << off);
 		self.used_blocks -= 1;
 	}
 

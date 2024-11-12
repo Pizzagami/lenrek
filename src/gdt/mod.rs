@@ -1,6 +1,6 @@
 use crate::shell::accessflags::{
-	KERNEL_CODE_SEGMENT, KERNEL_DATA_SEGMENT, KERNEL_STACK_SEGMENT, MAX_SEGMENT_SIZE, NO_OFFSET,
-	NULL_SEGMENT, SEGMENT_FLAGS, USER_CODE_SEGMENT, USER_DATA_SEGMENT, USER_STACK_SEGMENT,
+	KERNEL_CODE, KERNEL_DATA, KERNEL_STACK, MAX_SEGMENT_SIZE, NO_OFF,
+	NULL_SEGMENT, SEGMENT_FLAGS, USER_CODE, USER_DATA, USER_STACK,
 };
 use crate::tools::debug::LogLevel;
 use core::arch::asm;
@@ -15,7 +15,7 @@ pub struct GdtEntry {
 	base_high: u8,
 }
 
-macro_rules! create_gdt_entry {
+macro_rules! gdt_entry {
 	($limit:expr, $base:expr, $access:expr, $flags:expr, $name:expr) => {
 		GdtEntry {
 			limit_low: ($limit & 0xffff) as u16,
@@ -30,46 +30,46 @@ macro_rules! create_gdt_entry {
 
 #[link_section = ".gdt"]
 static LOW_GDT: [GdtEntry; 7] = [
-	create_gdt_entry!(0, 0, NULL_SEGMENT, 0, "NULL segment"),
-	create_gdt_entry!(
+	gdt_entry!(0, 0, NULL_SEGMENT, 0, "NULL segment"),
+	gdt_entry!(
 		MAX_SEGMENT_SIZE,
-		NO_OFFSET,
-		KERNEL_CODE_SEGMENT,
+		NO_OFF,
+		KERNEL_CODE,
 		SEGMENT_FLAGS,
 		"Kernel code segment"
 	),
-	create_gdt_entry!(
+	gdt_entry!(
 		MAX_SEGMENT_SIZE,
-		NO_OFFSET,
-		KERNEL_DATA_SEGMENT,
+		NO_OFF,
+		KERNEL_DATA,
 		SEGMENT_FLAGS,
 		"Kernel data segment"
 	),
-	create_gdt_entry!(
+	gdt_entry!(
 		MAX_SEGMENT_SIZE,
-		NO_OFFSET,
-		KERNEL_STACK_SEGMENT,
+		NO_OFF,
+		KERNEL_STACK,
 		SEGMENT_FLAGS,
 		"Kernel stack segment"
 	),
-	create_gdt_entry!(
+	gdt_entry!(
 		MAX_SEGMENT_SIZE,
-		NO_OFFSET,
-		USER_CODE_SEGMENT,
+		NO_OFF,
+		USER_CODE,
 		SEGMENT_FLAGS,
 		"User code segment"
 	),
-	create_gdt_entry!(
+	gdt_entry!(
 		MAX_SEGMENT_SIZE,
-		NO_OFFSET,
-		USER_DATA_SEGMENT,
+		NO_OFF,
+		USER_DATA,
 		SEGMENT_FLAGS,
 		"User data segment"
 	),
-	create_gdt_entry!(
+	gdt_entry!(
 		MAX_SEGMENT_SIZE,
-		NO_OFFSET,
-		USER_STACK_SEGMENT,
+		NO_OFF,
+		USER_STACK,
 		SEGMENT_FLAGS,
 		"User stack segment"
 	),
@@ -79,14 +79,14 @@ pub static mut GDT: *mut [GdtEntry; 7] = core::ptr::null_mut();
 #[repr(C, packed)]
 pub struct GdtRegister {
 	size: u16, 
-	offset: u32,
+	off: u32,
 }
 
 fn load_gdt() {
 	unsafe {
 		let gdt_register = GdtRegister {
 			size: (core::mem::size_of::<[GdtEntry; 7]>() - 1) as u16,
-			offset: GDT as u32,
+			off: GDT as u32,
 		};
 
 		asm!("lgdt [{}]", in(reg) &gdt_register, options(readonly, nostack, preserves_flags));

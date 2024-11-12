@@ -3,8 +3,8 @@
 .text
 
 gdt_flush:
-    movl 4(%esp), %eax             # 1st argument to this function is a pointer to a GdtPtr struct containing the limit and location of the Gdt.
-    lgdt (%eax)                    # Load the new Gdt
+    movl 4(%esp), %eax
+    lgdt (%eax)
     ljmp $0x8, $complete_flush
 
 # https://stackoverflow.com/questions/23978486/far-jump-in-gdt-in-bootloader

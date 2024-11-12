@@ -4,10 +4,8 @@
 .extern irq_handler
 
 
-# Macro to define isr with error code
 .macro isr_err_stub n
 .global isr_stub_\n
-# .type isr_stub_\n, @function
 
 isr_stub_\n:
     cli
@@ -16,10 +14,8 @@ isr_stub_\n:
 .endm
 
 
-# Macro to define isr without error code
 .macro isr_no_err_stub n
 .global isr_stub_\n
-# .type isr_stub_\n, @function
 
 isr_stub_\n:
     cli
@@ -31,7 +27,6 @@ isr_stub_\n:
 
 .macro IRQ  n
 .global irq_\n
-# .type irq_\n, @function
 
 irq_\n:
     cli
@@ -48,15 +43,13 @@ irq_\n:
     push %es
     push %fs
     push %gs
-    mov $0x10, %ax   # Load the Kernel Data Segment descriptor!
+    mov $0x10, %ax   # Load the Data Segment descriptor!
     mov %ax, %ds
     mov %ax, %ss
     mov $0x0, %ax
     mov %ax, %es
     mov %ax, %fs 
     mov %ax, %gs
-    #mov %esp, %eax   # Push us the stack
-    #push %eax
 .endm
 
 .macro RESTORE_REGS
@@ -69,7 +62,6 @@ irq_\n:
 .endm
 
 
-# Define exception handlers
 isr_no_err_stub 0
 isr_no_err_stub 1
 isr_no_err_stub 2
@@ -104,7 +96,6 @@ isr_err_stub    30
 isr_no_err_stub 31
 
 
-# Define IRQ
 IRQ 0
 IRQ 1
 IRQ 2
@@ -127,7 +118,7 @@ SAVE_REGS
     mov $irq_handler, %eax
     call *%eax
 RESTORE_REGS
-    add $8, %esp     # Cleans up the pushed error code and pushed ISR number
+    add $8, %esp
     iret
 
 isr_common_stub:
@@ -135,7 +126,7 @@ SAVE_REGS
     mov $exception_handler, %eax
     call *%eax
 RESTORE_REGS
-    add $8, %esp     # Cleans up the pushed error code and pushed ISR number
+    add $8, %esp
     iret
 
 .global load_idt

@@ -5,7 +5,7 @@ use crate::tools::vga::WRITER;
 use crate::tools::{prompt, vga};
 use core::sync::atomic::{AtomicBool, Ordering};
 
-pub static KEYBOARD_INTERRUPT_RECEIVED: AtomicBool = AtomicBool::new(false);
+pub static KEYBRD_INTP_RECEIVED: AtomicBool = AtomicBool::new(false);
 static SERIAL_SCREEN: AtomicBool = AtomicBool::new(false);
 
 static ESCAPE_PREFIX_RECEIVED: AtomicBool = AtomicBool::new(false);
@@ -28,8 +28,8 @@ static mut BUFFER_TAIL: usize = 0;
 static ESCAPE_PREFIX: u8 = 0xe0;
 
 pub fn process_keyboard_input() {
-	if KEYBOARD_INTERRUPT_RECEIVED.load(Ordering::SeqCst) {
-		KEYBOARD_INTERRUPT_RECEIVED.store(false, Ordering::SeqCst);
+	if KEYBRD_INTP_RECEIVED.load(Ordering::SeqCst) {
+		KEYBRD_INTP_RECEIVED.store(false, Ordering::SeqCst);
 	} else {
 		return;
 	}
